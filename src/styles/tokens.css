@@ -1,0 +1,55 @@
+:root {
+  /* Surfaces */
+  --bg-canvas: #0b0d12;
+  --bg-surface: #161a22;
+  --bg-surface-inset: #1d212b;
+  --bg-surface-raised: #21262f;
+  --border-subtle: #262b35;
+
+  /* Accent */
+  --accent-orange: #f7931a;
+  --accent-orange-strong: #ff9500;
+  --accent-orange-soft: rgba(247, 147, 26, 0.14);
+
+  /* Semantic */
+  --positive: #1fce7a;
+  --positive-soft: rgba(31, 206, 122, 0.14);
+  --negative: #f0506e;
+  --negative-soft: rgba(240, 80, 110, 0.14);
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #8a8f9c;
+  --text-tertiary: #5b606c;
+  --text-on-accent: #0b0d12;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Phone frame */
+  --phone-width: 390px;
+  --phone-height: 844px;
+  --tab-bar-height: 78px;
+}

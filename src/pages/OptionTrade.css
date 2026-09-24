@@ -1,0 +1,329 @@
+.option-trade-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  font-size: var(--font-size-xs);
+}
+
+.option-trade-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-4) var(--space-4) var(--space-3);
+}
+
+.option-trade-page__symbol-block {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.option-trade-page__star {
+  color: var(--accent-orange);
+}
+
+.option-trade-page__symbol {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+}
+
+.option-trade-page__symbol-sub {
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.option-trade-page__price-block {
+  text-align: right;
+}
+
+.option-trade-page__price {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+}
+
+.option-trade-page__price-chg {
+  color: var(--negative);
+  font-size: var(--font-size-xs);
+}
+
+.option-trade-page__cta-row {
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+.option-trade-page__cta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+  background: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 6px;
+  color: var(--text-primary);
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.option-trade-page__stats-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: 0 var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.option-trade-page__stats-label {
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.option-trade-page__stats-value {
+  font-weight: var(--font-weight-bold);
+}
+
+.option-trade-page__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.option-trade-page__book {
+  flex: 1;
+  padding: var(--space-3) 0 var(--space-3) var(--space-4);
+  overflow-y: auto;
+}
+
+.option-trade-page__book-header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  padding: 4px 8px 4px 0;
+}
+
+.option-trade-page__book-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 8px 2px 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.option-trade-page__book-row.is-ask {
+  color: var(--negative);
+}
+
+.option-trade-page__book-row.is-bid {
+  color: var(--positive);
+}
+
+.option-trade-page__book-row span:last-child {
+  color: var(--text-primary);
+}
+
+.option-trade-page__spot {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+  padding: 6px 0;
+}
+
+.option-trade-page__index-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  padding-bottom: 6px;
+}
+
+.option-trade-page__tag {
+  background: var(--bg-surface-raised);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: var(--font-weight-bold);
+}
+
+.option-trade-page__panel {
+  width: 46%;
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  overflow-y: auto;
+}
+
+.option-trade-page__side-toggle {
+  display: flex;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.option-trade-page__side-btn {
+  flex: 1;
+  background: var(--bg-surface-raised);
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 0;
+  font-weight: var(--font-weight-bold);
+}
+
+.option-trade-page__side-btn.is-buy.is-active {
+  background: transparent;
+  color: var(--positive);
+  border: 1px solid var(--positive);
+}
+
+.option-trade-page__side-btn.is-sell.is-active {
+  background: transparent;
+  color: var(--negative);
+  border: 1px solid var(--negative);
+}
+
+.option-trade-page__select-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.option-trade-page__select {
+  flex: 1;
+  background: var(--bg-surface-raised);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  text-align: center;
+}
+
+.option-trade-page__field {
+  background: var(--bg-surface-inset);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.option-trade-page__field-label {
+  color: var(--text-secondary);
+}
+
+.option-trade-page__field-link {
+  color: var(--accent-orange);
+  font-weight: var(--font-weight-bold);
+}
+
+.option-trade-page__field--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.option-trade-page__field-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.option-trade-page__field-unit {
+  color: var(--text-primary);
+}
+
+.option-trade-page__field-hint {
+  color: var(--text-tertiary);
+  font-size: 10px;
+}
+
+.option-trade-page__pct-row {
+  display: flex;
+  gap: 4px;
+}
+
+.option-trade-page__pct-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 10px;
+  padding: 4px 0;
+}
+
+.option-trade-page__pct-btn.is-active {
+  color: var(--accent-orange);
+  font-weight: var(--font-weight-bold);
+}
+
+.option-trade-page__tpsl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  color: var(--text-secondary);
+}
+
+.option-trade-page__radio {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--text-secondary);
+}
+
+.option-trade-page__req-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+}
+
+.option-trade-page__submit {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+}
+
+.option-trade-page__submit.is-buy {
+  background: var(--positive);
+  color: #06210f;
+}
+
+.option-trade-page__submit.is-sell {
+  background: var(--negative);
+  color: #2b0410;
+}
+
+.option-trade-page__checks {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: 10px;
+  flex-wrap: wrap;
+}
+
+.option-trade-page__gtc {
+  margin-left: auto;
+  background: var(--bg-surface-raised);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.option-trade-page__bottom-tabs {
+  display: flex;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.option-trade-page__bottom-tabs .is-active {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  border-bottom: 2px solid var(--accent-orange);
+  padding-bottom: 4px;
+}

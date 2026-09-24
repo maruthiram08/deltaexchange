@@ -1,0 +1,128 @@
+.contract-row.is-clickable {
+  cursor: pointer;
+}
+
+.contract-row.is-clickable:active {
+  background: var(--bg-surface-raised);
+}
+
+.contract-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  gap: var(--space-2);
+}
+
+.contract-row__left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.contract-row__text {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.contract-row__star {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.contract-row__star.is-fav {
+  color: var(--accent-orange);
+}
+
+.contract-row__symbol-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contract-row__symbol {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.contract-row__badge {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-orange);
+  background: var(--accent-orange-soft);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.contract-row__subtitle-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  min-width: 0;
+}
+
+.contract-row__fee-badge {
+  font-size: 9px;
+  color: #d8b45a;
+  background: rgba(216, 180, 90, 0.14);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.contract-row__subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contract-row__mid {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 90px;
+}
+
+.contract-row__price {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.contract-row__vol {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.contract-row__right {
+  min-width: 74px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.contract-row__chg {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.contract-row__chg.is-positive {
+  background: var(--positive);
+  color: #06210f;
+}
+
+.contract-row__chg.is-negative {
+  background: var(--negative);
+  color: #2b0410;
+}

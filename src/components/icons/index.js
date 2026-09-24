@@ -1,0 +1,13 @@
+export { BellIcon } from "./bell";
+export { ChartLineIcon } from "./chart-line";
+export { ChevronLeftIcon } from "./chevron-left";
+export { ChevronsUpDownIcon } from "./chevrons-up-down";
+export { CompassIcon } from "./compass";
+export { FlaskIcon } from "./flask";
+export { HomeIcon } from "./home";
+export { ReceiptIcon } from "./receipt";
+export { SearchIcon } from "./search";
+export { TrendingUpDownIcon } from "./trending-up-down";
+export { TrendingUpIcon } from "./trending-up";
+export { UsersIcon } from "./users";
+export { XIcon } from "./x";

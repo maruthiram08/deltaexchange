@@ -1,0 +1,28 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+
+.badge--orange {
+  background: var(--accent-orange);
+  color: var(--text-on-accent);
+}
+
+.badge--positive {
+  background: var(--positive-soft);
+  color: var(--positive);
+}
+
+.badge--negative {
+  background: var(--negative-soft);
+  color: var(--negative);
+}
+
+.badge--neutral {
+  background: var(--bg-surface-raised);
+  color: var(--text-secondary);
+}

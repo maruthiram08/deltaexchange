@@ -1,0 +1,22 @@
+.phone-frame {
+  height: min(var(--phone-height), calc(100vh - var(--space-6) * 2));
+  aspect-ratio: 390 / 844;
+  width: auto;
+  background: var(--bg-canvas);
+  border-radius: 44px;
+  border: 10px solid #000;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.phone-frame__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}

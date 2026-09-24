@@ -1,0 +1,346 @@
+.strategy-basket-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.strategy-basket-page__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.strategy-basket-page__asset {
+  color: var(--accent-orange);
+  font-weight: var(--font-weight-bold);
+}
+
+.strategy-basket-page__price {
+  font-weight: var(--font-weight-bold);
+}
+
+.strategy-basket-page__price span {
+  color: var(--positive);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-xs);
+}
+
+.strategy-basket-page__contracts-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--accent-orange);
+  color: var(--accent-orange);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.strategy-basket-page__close {
+  background: var(--bg-surface-raised);
+  border: none;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.strategy-basket-page__prebuilt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.strategy-basket-page__strategy-badge {
+  background: rgba(31, 206, 122, 0.14);
+  color: var(--positive);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.strategy-basket-page__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.strategy-basket-page__chart-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.strategy-basket-page__chart-svg {
+  display: block;
+  width: 100%;
+  height: 140px;
+}
+
+.strategy-basket-page__chart-fill.is-positive {
+  fill: rgba(31, 206, 122, 0.16);
+}
+
+.strategy-basket-page__chart-fill.is-negative {
+  fill: rgba(240, 80, 110, 0.16);
+}
+
+.strategy-basket-page__chart-zero {
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.strategy-basket-page__chart-line {
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.strategy-basket-page__chart-line.is-positive {
+  stroke: var(--positive);
+}
+
+.strategy-basket-page__chart-line.is-negative {
+  stroke: var(--negative);
+}
+
+.strategy-basket-page__chart-axis {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-tertiary);
+  font-size: 9px;
+  margin-top: var(--space-2);
+}
+
+.strategy-basket-page__payoff-stats {
+  display: flex;
+  gap: var(--space-5);
+  padding: 0 var(--space-1) var(--space-4);
+}
+
+.strategy-basket-page__payoff-stats-label {
+  color: var(--text-secondary);
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+.strategy-basket-page__payoff-stats-value {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+}
+
+.strategy-basket-page__payoff-stats-value.is-positive {
+  color: var(--positive);
+}
+
+.strategy-basket-page__payoff-stats-value.is-negative {
+  color: var(--negative);
+}
+
+.strategy-basket-page__strategies-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: var(--font-weight-bold);
+  padding-bottom: var(--space-2);
+}
+
+.strategy-basket-page__add-new {
+  background: none;
+  border: none;
+  color: var(--accent-orange);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.strategy-basket-page__leg-row {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.strategy-basket-page__leg-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.strategy-basket-page__leg-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 28px;
+}
+
+.strategy-basket-page__leg-premium {
+  color: var(--text-secondary);
+  font-size: 10px;
+}
+
+.strategy-basket-page__qty-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-inset);
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.strategy-basket-page__qty-label {
+  color: var(--text-secondary);
+  font-size: 9px;
+  font-weight: var(--font-weight-regular);
+  margin-right: 2px;
+}
+
+.strategy-basket-page__qty-stepper button {
+  background: none;
+  border: none;
+  color: var(--accent-orange);
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  width: 16px;
+  line-height: 1;
+}
+
+.strategy-basket-page__type-toggle {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: 5px 7px;
+  flex-shrink: 0;
+}
+
+.strategy-basket-page__strike-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-surface-inset);
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.strategy-basket-page__strike-stepper button {
+  background: none;
+  border: none;
+  color: var(--accent-orange);
+  font-size: 14px;
+  font-weight: var(--font-weight-bold);
+  width: 16px;
+  line-height: 1;
+}
+
+.strategy-basket-page__leg-remove {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  padding: 0 2px;
+}
+
+.strategy-basket-page__checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: var(--accent-orange);
+  color: var(--text-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.strategy-basket-page__side-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  border: 1px solid;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.strategy-basket-page__side-badge.is-buy {
+  color: var(--positive);
+  border-color: var(--positive);
+}
+
+.strategy-basket-page__side-badge.is-sell {
+  color: var(--negative);
+  border-color: var(--negative);
+}
+
+.strategy-basket-page__footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.strategy-basket-page__margin-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.strategy-basket-page__margin-row span:last-child {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.strategy-basket-page__cta-row {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.strategy-basket-page__analyse-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--accent-orange);
+  color: var(--accent-orange);
+  border-radius: var(--radius-sm);
+  padding: 12px 0;
+  font-weight: var(--font-weight-bold);
+}
+
+.strategy-basket-page__place-btn {
+  flex: 1;
+  background: var(--accent-orange);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-bold);
+}
