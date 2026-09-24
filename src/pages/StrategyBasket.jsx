@@ -89,7 +89,7 @@ export default function StrategyBasket() {
   const navigate = useNavigate();
   const location = useLocation();
   const strategyName = location.state?.strategy ?? "Bull Call Spread";
-  const [legs, setLegs] = useState(DEFAULT_LEGS);
+  const [legs, setLegs] = useState(location.state?.legs ?? DEFAULT_LEGS);
 
   const { points, maxProfit, maxLoss, maxProfitUnlimited, maxLossUnlimited } = useMemo(() => buildPayoff(legs), [legs]);
 

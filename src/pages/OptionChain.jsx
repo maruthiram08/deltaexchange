@@ -331,6 +331,22 @@ export default function OptionChain() {
     });
   };
 
+  const reviewBasket = () => {
+    // The basket page only models option legs, so a futures leg is not carried over.
+    const basketLegs = Array.from(legs.values())
+      .filter((l) => l.kind !== "future")
+      .map((l, i) => ({
+        id: i + 1,
+        side: l.action,
+        optionType: l.side === "call" ? "CE" : "PE",
+        strike: l.strike,
+        expiry: "230926",
+        qty: Math.max(1, Number(l.qty) || 1),
+        premium: Math.round(l.mark),
+      }));
+    navigate("/strategy-basket", { state: { strategy: summary?.name, legs: basketLegs } });
+  };
+
   const legsArray = useMemo(() => Array.from(legs.values()), [legs]);
   const summary = useMemo(() => summarize(legsArray), [legsArray]);
   const showHintPane = basketOn && legs.size === 0;
@@ -637,7 +653,7 @@ export default function OptionChain() {
                 <span className={insufficientBalance ? "is-negative" : ""}>Req margin: {money(summary.reqMargin)}</span>
                 <span>Charges: {money(summary.charges)}</span>
               </div>
-              <button type="button" className="option-chain-page__review-btn">
+              <button type="button" className="option-chain-page__review-btn" onClick={reviewBasket}>
                 Review basket ({legs.size})
               </button>
             </div>
