@@ -2,7 +2,7 @@
   position: relative;
   isolation: isolate;
   width: 100%;
-  max-width: 980px;
+  max-width: 1120px;
   color: var(--text-primary);
   font-family: var(--font-family);
 }
@@ -85,6 +85,23 @@
   padding: 14px 28px;
   box-shadow: 0 10px 34px rgba(169, 200, 255, 0.28);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.index-page__badge {
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(110, 168, 254, 0.18);
+  color: #3b5fd0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.index-hero__hint {
+  margin: var(--space-4) 0 0;
+  color: #a9c8ff;
+  font-size: var(--font-size-sm);
 }
 
 .index-hero__actions {
@@ -277,9 +294,12 @@ a.index-row:focus-visible {
 
 /* ---- Mind map ---- */
 .index-map {
+  --tone: #f7931a;
+  --tone-rgb: 247, 147, 26;
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   padding: 36px 20px 24px;
   border: 1px solid var(--border-subtle);
   border-radius: 28px;
@@ -288,7 +308,6 @@ a.index-row:focus-visible {
 }
 
 .index-map__center {
-  align-self: center;
   position: relative;
   z-index: 2;
   white-space: nowrap;
@@ -301,55 +320,37 @@ a.index-row:focus-visible {
     0 10px 36px rgba(247, 147, 26, 0.35);
 }
 
-.index-map__branch {
+.index-map__list {
   position: relative;
-  margin-top: 64px;
-  padding: 38px 18px 18px;
+  width: 100%;
+  margin-top: 56px;
+  padding: 24px 18px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2) 40px;
   border: 1px solid rgba(var(--tone-rgb), 0.3);
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(var(--tone-rgb), 0.08), rgba(var(--tone-rgb), 0.02));
 }
 
-/* Stacked layout: a short connector runs from the node above into each persona tab. */
-.index-map__branch::before {
+/* A short connector runs from the centre node into the list. */
+.index-map__list::before {
   content: "";
   position: absolute;
   left: 50%;
   bottom: 100%;
   width: 2px;
-  height: 64px;
+  height: 56px;
   margin-left: -1px;
-  background: linear-gradient(#f7931a, var(--tone));
-  opacity: 0.7;
+  background: linear-gradient(#f7931a, rgba(var(--tone-rgb), 0.3));
+  opacity: 0.8;
 }
 
-.index-map__persona {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  white-space: nowrap;
-  background: var(--tone);
-  color: var(--text-on-accent);
-  border-radius: var(--radius-pill);
-  padding: 8px 18px;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-bold);
-  box-shadow: 0 6px 20px rgba(var(--tone-rgb), 0.35);
-}
-
-.index-map__persona em {
-  font-style: normal;
-  font-weight: var(--font-weight-regular);
-  opacity: 0.75;
-}
-
-.index-map__words {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-2);
+@media (min-width: 1180px) {
+  .index-map__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 28px 24px 22px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -373,42 +374,11 @@ a.index-row:focus-visible {
   }
 }
 
-/* Wide layout: two columns, with curved spokes from the centre node to each persona tab. */
-@media (min-width: 1000px) {
-  .index-map {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 40px;
-    padding: 40px 24px 28px;
-  }
-
-  .index-map__spokes {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .index-map__spokes path {
-    fill: none;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    opacity: 0.75;
-  }
-
-  .index-map__center {
-    grid-column: 1 / -1;
-    justify-self: center;
-  }
-
-  .index-map__branch {
-    margin-top: 96px;
-    align-self: start;
-  }
-
-  .index-map__branch::before {
-    display: none;
-  }
+.index-feature__play {
+  margin-left: 8px;
+  color: var(--tone);
+  font-size: 9px;
+  vertical-align: 1px;
 }
 
 /* ---- Every screen + footer ---- */

@@ -1,0 +1,196 @@
+.player {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--text-primary);
+}
+
+.player__top {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.player__pause {
+  position: absolute;
+  right: 0;
+  top: -8px;
+  background: none;
+  border: 1px solid rgba(169, 200, 255, 0.3);
+  border-radius: var(--radius-pill);
+  color: #cfe0ff;
+  font: inherit;
+  font-size: var(--font-size-xs);
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.player__pause:hover {
+  background: rgba(110, 168, 254, 0.14);
+  color: #ffffff;
+}
+
+.player__dots {
+  display: flex;
+  gap: 10px;
+}
+
+.player__dots button {
+  width: 34px;
+  height: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.player__dots button.is-active {
+  background: linear-gradient(90deg, #a9c8ff, #c1a8ff);
+}
+
+.player__beat {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player__label {
+  margin: 0 0 var(--space-4);
+  padding: 6px 14px;
+  align-self: center;
+  border: 1px solid rgba(110, 168, 254, 0.35);
+  border-radius: var(--radius-pill);
+  background: rgba(110, 168, 254, 0.08);
+  color: #a9c8ff;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.player__pain,
+.player__idea {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.player__pain p:not(.player__label) {
+  margin: 0 0 var(--space-3);
+  font-size: clamp(22px, 2.6vw, 32px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+/* The label stays centred. The chip hangs off its right edge, so it can arrive later without shifting anything. */
+.player__labelrow {
+  position: relative;
+  width: fit-content;
+  margin-bottom: var(--space-5);
+}
+
+.player__labelrow .player__tag {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 10px);
+  translate: 0 -50%;
+  white-space: nowrap;
+}
+
+.player__labelrow .player__label {
+  margin: 0;
+}
+
+.player__tag {
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 160, 100, 0.4);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 140, 90, 0.08);
+  color: #ffc48a;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.player__idea h2 {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.player__idea h2 strong {
+  background: linear-gradient(90deg, #ffffff 10%, #a9c8ff 55%, #c1a8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 800;
+}
+
+.player__action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.player__after {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.player__live {
+  color: #cfe0ff;
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+}
+
+.player__live:hover {
+  color: #ffffff;
+}
+
+.player__next {
+  font-size: var(--font-size-md);
+  background: #ffffff;
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--text-on-accent);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  padding: 14px 30px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(169, 200, 255, 0.3);
+}
+
+.player__next--solo {
+  margin-top: var(--space-5);
+}
+
+/* The key pain, the last sentence: bigger, warm, with a soft glow, so it lands after the setup. */
+.player__pain p.player__punch {
+  margin-top: var(--space-4);
+  font-size: clamp(30px, 3.6vw, 46px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  background: linear-gradient(90deg, #ffd08a 0%, #ff8a5c 55%, #ff6b8a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 6px 28px rgba(255, 120, 90, 0.35));
+}

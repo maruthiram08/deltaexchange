@@ -1,0 +1,214 @@
+.ghost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ghost__viewport {
+  position: relative;
+}
+
+.ghost__stage {
+  position: relative;
+  transform-origin: top left;
+}
+
+.ghost__frame {
+  display: block;
+  border: 0;
+  background: #05060a;
+}
+
+/* Blocks stray clicks while the script runs, until the viewer takes over. */
+.ghost__shield {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.ghost__cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  pointer-events: none;
+  transition: transform 1.4s cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.ghost__cursor svg {
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  transition: transform 0.15s ease;
+  transform-origin: 3px 2px;
+}
+
+.ghost__cursor svg.is-press {
+  transform: scale(0.85);
+}
+
+.ghost__ripple {
+  position: absolute;
+  top: -14px;
+  left: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #6ea8fe;
+  animation: ripple 0.6s ease-out forwards;
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+
+.ghost__caption {
+  min-height: 28px;
+  margin: 0;
+  padding: 6px 16px;
+  color: #dfe8ff;
+  font-size: var(--font-size-md);
+  text-align: center;
+}
+
+/* Kept quiet so the story, not the controls, holds the eye. */
+.ghost__controls {
+  display: flex;
+  gap: var(--space-3);
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.ghost__controls:hover,
+.ghost__controls:focus-within {
+  opacity: 1;
+}
+
+.ghost__controls button {
+  background: none;
+  border: none;
+  color: #a7adbb;
+  font-size: var(--font-size-xs);
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+.ghost__controls button:hover {
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ghost__cursor {
+    transition: none;
+  }
+}
+
+/* When the run ends the phone blurs and the call to action sits on top of it. */
+.ghost__stage {
+  transition: filter 0.6s ease;
+}
+
+.ghost__end {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: 24px;
+  background: rgba(8, 10, 16, 0.95);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  animation: ghost-end-in 0.5s ease 0.2s both;
+}
+
+.ghost__end-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ghost__pill {
+  min-width: 220px;
+  background: rgba(110, 168, 254, 0.08);
+  border: 1px solid rgba(169, 200, 255, 0.4);
+  border-radius: var(--radius-pill);
+  color: #cfe0ff;
+  font: inherit;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  padding: 12px 24px;
+  cursor: pointer;
+}
+
+.ghost__pill:hover {
+  background: rgba(110, 168, 254, 0.18);
+  color: #ffffff;
+}
+
+@keyframes ghost-end-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ghost__count {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: 24px;
+  background: rgba(8, 10, 16, 0.6);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #cfe0ff;
+  font-size: var(--font-size-md);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ghost__count strong {
+  color: #ffffff;
+  font-size: 96px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  animation: ghost-count-pop 0.9s ease-out both;
+}
+
+@keyframes ghost-count-pop {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+    transform: scale(0.9);
+  }
+}
