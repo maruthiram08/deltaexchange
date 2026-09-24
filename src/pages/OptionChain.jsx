@@ -59,6 +59,7 @@ function computeOiLevels(rows) {
 }
 
 const OI_LEVELS = computeOiLevels(SPLIT_ROWS);
+const MAX_OI = Math.max(...SPLIT_ROWS.filter((r) => !r.spotMarker).flatMap((r) => [r.callOi, r.putOi]));
 
 // Option Chain thesis layer (inputs.md Section 12). IV Rank is compared against a disclosed
 // mock 30-day range (not real history) — the point is to demonstrate the decision rule, not
@@ -395,11 +396,15 @@ export default function OptionChain() {
   };
 
   const renderDataCell = (row, side) => {
+    const oiProps = {
+      className: `option-chain-page__oi-cell is-${side}`,
+      style: { "--oi": (side === "call" ? row.callOi : row.putOi) / MAX_OI },
+    };
     if (chainDataMode === "OI/Vol") {
       const oi = side === "call" ? row.callOi : row.putOi;
       const vol = side === "call" ? row.callVol : row.putVol;
       return (
-        <span>
+        <span {...oiProps}>
           {fmtM(oi)}<br /><span className="option-chain-page__iv">{fmtM(vol)}</span>
         </span>
       );
@@ -408,7 +413,7 @@ export default function OptionChain() {
       const delta = side === "call" ? row.callDelta : row.putDelta;
       const theta = side === "call" ? row.callTheta : row.putTheta;
       return (
-        <span>
+        <span {...oiProps}>
           {delta.toFixed(2)}<br /><span className="option-chain-page__iv">{theta.toFixed(1)}</span>
         </span>
       );
@@ -416,7 +421,7 @@ export default function OptionChain() {
     const mark = side === "call" ? row.callMark : row.putMark;
     const iv = side === "call" ? row.callIv : row.putIv;
     return (
-      <span>
+      <span {...oiProps}>
         ${mark}<br /><span className="option-chain-page__iv">{iv}%</span>
       </span>
     );

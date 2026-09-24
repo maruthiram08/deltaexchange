@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
+import RiskCheck from "../components/common/RiskCheck";
+import { shouldGate, markDone, leverageOr } from "../riskGate";
 import { ChartLineIcon } from "../components/icons";
 import "./OptionTrade.css";
 
@@ -29,6 +31,8 @@ export default function OptionTrade() {
   const navigate = useNavigate();
   const [side, setSide] = useState("Buy");
   const [qtyPct, setQtyPct] = useState(null);
+  const [leverage, setLeverage] = useState(() => leverageOr(100));
+  const [riskCheck, setRiskCheck] = useState(false);
 
   return (
     <PhoneFrame footer={<BottomTabBar />}>
@@ -118,7 +122,7 @@ export default function OptionTrade() {
             </div>
 
             <div className="option-trade-page__select-row">
-              <div className="option-trade-page__select">100x ▾</div>
+              <div className="option-trade-page__select">{leverage}x ▾</div>
               <div className="option-trade-page__select">Limit ▾</div>
             </div>
 
@@ -163,7 +167,7 @@ export default function OptionTrade() {
             <button
               type="button"
               className={`option-trade-page__submit is-${side.toLowerCase()}`}
-              onClick={() => navigate("/positions")}
+              onClick={() => (shouldGate() ? setRiskCheck(true) : navigate("/positions"))}
             >
               {side}
             </button>
@@ -184,6 +188,23 @@ export default function OptionTrade() {
           <span className="is-active">Position</span>
           <span>Open Orders (0)</span>
         </div>
+
+        {riskCheck && (
+          <RiskCheck
+            instrument="P-BTC-81400"
+            side={side === "Buy" ? "Long" : "Short"}
+            sideLabel={side}
+            entryPrice={12}
+            leverage={leverage}
+            onClose={() => setRiskCheck(false)}
+            onPlace={({ leverage: chosen }) => {
+              setLeverage(chosen);
+              markDone(chosen);
+              setRiskCheck(false);
+              navigate("/positions");
+            }}
+          />
+        )}
       </div>
     </PhoneFrame>
   );

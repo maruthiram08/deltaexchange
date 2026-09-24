@@ -320,26 +320,23 @@
 }
 
 .option-chain-page__oi-tag {
-  font-size: 7px;
+  font-size: 9px;
   font-weight: var(--font-weight-bold);
+  line-height: 1.2;
   border-radius: 3px;
-  padding: 1px 4px;
+  padding: 1px 5px;
   white-space: nowrap;
+  color: var(--text-on-accent);
 }
-
+/* Solid fills: translucent tints disappear against the OI bars behind the row. */
 .option-chain-page__oi-tag.is-maxpain {
-  background: var(--accent-orange-soft);
-  color: var(--accent-orange);
+  background: var(--accent-orange);
 }
-
 .option-chain-page__oi-tag.is-support {
-  background: var(--positive-soft);
-  color: var(--positive);
+  background: var(--positive);
 }
-
 .option-chain-page__oi-tag.is-resistance {
-  background: var(--negative-soft);
-  color: var(--negative);
+  background: var(--negative);
 }
 
 .option-chain-page__iv {
@@ -422,11 +419,23 @@
 }
 
 .option-chain-page__summary {
+  position: relative;
   background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
   border-radius: 20px 20px 0 0;
   padding: var(--space-3) var(--space-4) var(--space-4);
   box-shadow: 0 -12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.option-chain-page__summary::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 72px;
+  background: linear-gradient(to top, rgba(11, 13, 18, 0.96), rgba(11, 13, 18, 0));
+  pointer-events: none;
 }
 
 .option-chain-page__summary-header {
@@ -678,4 +687,31 @@
   border-top: 1px solid var(--border-subtle);
   padding-top: var(--space-2);
   margin-top: var(--space-2);
+}
+
+/* OI depth bars behind the call/put data cells, anchored at the strike column. */
+.option-chain-page__oi-cell {
+  position: relative;
+  isolation: isolate;
+}
+
+.option-chain-page__oi-cell::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: calc(var(--oi) * 100%);
+  border-radius: 3px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.option-chain-page__oi-cell.is-call::before {
+  right: 0;
+  background: rgba(240, 80, 110, 0.22);
+}
+
+.option-chain-page__oi-cell.is-put::before {
+  left: 0;
+  background: rgba(31, 206, 122, 0.22);
 }

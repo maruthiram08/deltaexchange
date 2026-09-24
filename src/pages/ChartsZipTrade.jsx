@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
 import Toggle from "../components/common/Toggle";
+import RiskCheck from "../components/common/RiskCheck";
+import { estimateLiquidation } from "../utils/risk";
+import { shouldGate, markDone, rearm, leverageOr } from "../riskGate";
 import { XIcon } from "../components/icons";
 import "./ChartsZipTrade.css";
 
@@ -66,11 +69,6 @@ const RECENT_TRADES = [
 ];
 
 const EXISTING_POSITION = { side: "Long", qty: 0.02, entryPrice: 85200 };
-
-function estimateLiquidation(side, entryPrice, leverage) {
-  const buffer = 0.9 / leverage;
-  return side === "Long" ? entryPrice * (1 - buffer) : entryPrice * (1 + buffer);
-}
 
 // Market Pulse (inputs.md Section 14). Deterministic, no-ML classification off mock
 // positioning data — same "name the state, never the direction" discipline as
@@ -150,6 +148,9 @@ export default function ChartsZipTrade() {
   const [zipQtyUnit, setZipQtyUnit] = useState("Lot");
   const [showExitSheet, setShowExitSheet] = useState(false);
   const [closePct, setClosePct] = useState("100%");
+  const [leverage, setLeverage] = useState(() => leverageOr(LEVERAGE));
+  const [riskCheck, setRiskCheck] = useState(null);
+  const [firstTimeSim, setFirstTimeSim] = useState(shouldGate);
 
   const shortPrice = 86047;
   const longPrice = 86048;
@@ -173,6 +174,10 @@ export default function ChartsZipTrade() {
         : `$${(qtyBtc * SPOT).toFixed(2)}`;
 
   const handleZipOrder = (side, price) => {
+    if (shouldGate()) {
+      setRiskCheck({ side, price });
+      return;
+    }
     if (skipConfirm) {
       navigate("/positions");
     } else {
@@ -228,7 +233,10 @@ export default function ChartsZipTrade() {
             <button
               type="button"
               className="charts-page__ziptrade-settings"
-              onClick={() => setShowZipSettings(true)}
+              onClick={() => {
+                setFirstTimeSim(shouldGate());
+                setShowZipSettings(true);
+              }}
               aria-label="ZipTrade settings"
             >
               ⚙
@@ -355,25 +363,29 @@ export default function ChartsZipTrade() {
           </div>
         )}
 
-        <button
-          type="button"
-          className={`charts-page__market-pulse-card is-${MARKET_STATE.key}`}
-          onClick={() => setShowMarketPulse(true)}
-        >
-          <span className="charts-page__market-pulse-dot" />
-          <span className="charts-page__market-pulse-text">{MARKET_STATE.headline}</span>
-          <span className="charts-page__market-pulse-arrow">›</span>
-        </button>
-
-        {ziptradeOn && zipPanelBelowChart && (
-          <>
-            <div className="charts-page__zip-meta-row">
-              <span className="charts-page__zip-leverage">{LEVERAGE}x</span>
+        <div className="charts-page__zip-meta-row">
+          {ziptradeOn && zipPanelBelowChart && (
+            <>
+              <span className="charts-page__zip-leverage">{leverage}x</span>
               <button type="button" className="charts-page__zip-order-type" onClick={cycleOrderType}>
                 {zipOrderType} ▾
               </button>
-            </div>
+            </>
+          )}
+          <button
+            type="button"
+            className={`charts-page__market-pulse-chip is-${MARKET_STATE.key}`}
+            onClick={() => setShowMarketPulse(true)}
+            aria-label={`Market Pulse: ${MARKET_STATE.headline}`}
+          >
+            <span className="charts-page__market-pulse-dot" />
+            <span>{MARKET_STATE.label}</span>
+            <span className="charts-page__market-pulse-arrow">›</span>
+          </button>
+        </div>
 
+        {ziptradeOn && zipPanelBelowChart && (
+          <>
             <div className="charts-page__ziptrade-bar">
               {hasOpenPosition && !showAddAction ? (
                 <>
@@ -468,6 +480,25 @@ export default function ChartsZipTrade() {
                   }}
                 />
               </div>
+
+              <div className="charts-page__settings-row">
+                <div>
+                  <div className="charts-page__settings-title">Simulate First-time Trader (Demo)</div>
+                  <div className="charts-page__settings-subtext">Show the first leveraged trade check on the next order</div>
+                </div>
+                <Toggle
+                  checked={firstTimeSim}
+                  onChange={(v) => {
+                    setFirstTimeSim(v);
+                    if (v) {
+                      rearm();
+                      setLeverage(LEVERAGE);
+                    } else {
+                      markDone();
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -490,11 +521,11 @@ export default function ChartsZipTrade() {
               </div>
               <div className="charts-page__modal-row">
                 <span>Leverage</span>
-                <span>{LEVERAGE}x</span>
+                <span>{leverage}x</span>
               </div>
               <div className="charts-page__modal-row">
                 <span>Est. Liquidation</span>
-                <span>{estimateLiquidation(pendingOrder.side, pendingOrder.price, LEVERAGE).toFixed(0)}</span>
+                <span>{estimateLiquidation(pendingOrder.side, pendingOrder.price, leverage).toFixed(0)}</span>
               </div>
               <div className="charts-page__confirm-actions">
                 <button type="button" className="charts-page__confirm-cancel" onClick={cancelPendingOrder}>
@@ -582,6 +613,23 @@ export default function ChartsZipTrade() {
               </div>
             </div>
           </div>
+        )}
+
+        {riskCheck && (
+          <RiskCheck
+            instrument="BTCUSD"
+            side={riskCheck.side}
+            entryPrice={riskCheck.price}
+            leverage={leverage}
+            onClose={() => setRiskCheck(null)}
+            onPlace={({ leverage: chosen }) => {
+              setLeverage(chosen);
+              markDone(chosen);
+              setFirstTimeSim(false);
+              setRiskCheck(null);
+              navigate("/positions");
+            }}
+          />
         )}
 
         {showMarketPulse && (

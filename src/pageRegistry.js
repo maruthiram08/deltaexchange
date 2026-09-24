@@ -1,6 +1,4 @@
-// Central map of every prototype screen: its route, the component that renders it
-// (Placeholder until built), and which pain-point number(s) from pain-points-notes.md
-// it's relevant to — kept as bookkeeping for the page-by-page changes ahead.
+// Central map of every prototype screen: its route and the component that renders it.
 
 import Home from "./pages/Home";
 import Markets from "./pages/Markets";
@@ -18,34 +16,28 @@ export const PAGE_REGISTRY = [
   {
     section: "Home & Discovery",
     pages: [
-      { id: "home", path: "/home", label: "Home", painPoints: [1, 3], component: Home },
-      { id: "markets", path: "/markets", label: "Markets", painPoints: [1], component: Markets },
-      { id: "straddle", path: "/straddle", label: "Straddle list", painPoints: [1, 2], component: Straddle },
+      { id: "home", path: "/home", label: "Home", component: Home },
+      { id: "markets", path: "/markets", label: "Markets", component: Markets },
+      { id: "straddle", path: "/straddle", label: "Straddle list", component: Straddle },
     ],
   },
   {
     section: "Option Chain & Strategy Builder",
     pages: [
-      { id: "option-chain", path: "/option-chain", label: "Option chain", painPoints: [3, 10], component: OptionChain },
-      { id: "trade", path: "/trade", label: "Trade (futures)", painPoints: [4], component: Trade },
-      { id: "option-trade", path: "/option-trade", label: "Option details (put/call)", painPoints: [4], component: OptionTrade },
-      { id: "strategy-builder", path: "/strategy-builder", label: "Strategy builder — templates", painPoints: [5], component: StrategyBuilder },
-      { id: "strategy-basket", path: "/strategy-basket", label: "Strategy basket (pre-built legs)", painPoints: [5], component: StrategyBasket },
-      { id: "analyze-payoff", path: "/analyze-payoff", label: "Analyze payoff", painPoints: [5], component: AnalyzePayoff },
-      { id: "custom-strategy", path: "/custom-strategy", label: "Custom strategy flow", painPoints: [6] },
+      { id: "option-chain", path: "/option-chain", label: "Option chain", component: OptionChain },
+      { id: "trade", path: "/trade", label: "Trade (futures)", component: Trade },
+      { id: "option-trade", path: "/option-trade", label: "Option details", component: OptionTrade },
+      { id: "strategy-builder", path: "/strategy-builder", label: "Strategy templates", component: StrategyBuilder },
+      { id: "strategy-basket", path: "/strategy-basket", label: "Strategy basket", component: StrategyBasket },
+      { id: "analyze-payoff", path: "/analyze-payoff", label: "Analyze payoff", component: AnalyzePayoff },
     ],
   },
   {
     section: "Order Execution",
     pages: [
-      { id: "charts", path: "/charts", label: "Charts + Zip Trade", painPoints: [8, 9], component: ChartsZipTrade },
-      { id: "chart-add-order", path: "/chart-add-order", label: "Chart long-press Add Order", painPoints: [8] },
-      { id: "positions", path: "/positions", label: "Positions + close flow", painPoints: [11], component: Positions },
+      { id: "charts", path: "/charts", label: "Charts + ZipTrade", component: ChartsZipTrade },
+      { id: "positions", path: "/positions", label: "Positions", component: Positions },
     ],
-  },
-  {
-    section: "Terminology",
-    pages: [{ id: "terminology", path: "/terminology", label: "Jargon audit", painPoints: [7] }],
   },
 ];
 

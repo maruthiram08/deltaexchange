@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
+import RiskCheck from "../components/common/RiskCheck";
+import { shouldGate, markDone, leverageOr } from "../riskGate";
 import "./Trade.css";
 
 const ASKS = [
@@ -28,6 +30,8 @@ export default function Trade() {
   const navigate = useNavigate();
   const [side, setSide] = useState("Long");
   const [qtyPct, setQtyPct] = useState(null);
+  const [leverage, setLeverage] = useState(() => leverageOr(50));
+  const [riskCheck, setRiskCheck] = useState(false);
 
   return (
     <PhoneFrame footer={<BottomTabBar />}>
@@ -117,7 +121,7 @@ export default function Trade() {
             </div>
 
             <div className="trade-page__select-row">
-              <div className="trade-page__select">50x ▾</div>
+              <div className="trade-page__select">{leverage}x ▾</div>
               <div className="trade-page__select">Limit ▾</div>
             </div>
 
@@ -159,7 +163,7 @@ export default function Trade() {
               <span>0 | 6.58 USD</span>
             </div>
 
-            <button type="button" className="trade-page__submit" onClick={() => navigate("/positions")}>
+            <button type="button" className="trade-page__submit" onClick={() => (shouldGate() ? setRiskCheck(true) : navigate("/positions"))}>
               {side}
             </button>
 
@@ -184,6 +188,22 @@ export default function Trade() {
           <span className="is-active">Position</span>
           <span>Open Orders (0)</span>
         </div>
+
+        {riskCheck && (
+          <RiskCheck
+            instrument="BTCUSD"
+            side={side}
+            entryPrice={86077}
+            leverage={leverage}
+            onClose={() => setRiskCheck(false)}
+            onPlace={({ leverage: chosen }) => {
+              setLeverage(chosen);
+              markDone(chosen);
+              setRiskCheck(false);
+              navigate("/positions");
+            }}
+          />
+        )}
       </div>
     </PhoneFrame>
   );

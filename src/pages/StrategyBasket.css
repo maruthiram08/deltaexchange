@@ -15,6 +15,7 @@
 .strategy-basket-page__asset {
   color: var(--accent-orange);
   font-weight: var(--font-weight-bold);
+  white-space: nowrap;
 }
 
 .strategy-basket-page__price {
@@ -33,9 +34,10 @@
   border: 1px solid var(--accent-orange);
   color: var(--accent-orange);
   border-radius: var(--radius-sm);
-  padding: 8px 14px;
+  padding: 8px 12px;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
+  white-space: nowrap;
 }
 
 .strategy-basket-page__close {
@@ -58,6 +60,9 @@
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
   font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  gap: var(--space-2);
 }
 
 .strategy-basket-page__strategy-badge {
@@ -66,7 +71,8 @@
   border-radius: var(--radius-sm);
   padding: 6px 12px;
   font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
 }
 
 .strategy-basket-page__scroll {
@@ -183,6 +189,41 @@
   align-items: center;
   justify-content: space-between;
   padding-left: 28px;
+}
+
+.strategy-basket-page__leg-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.strategy-basket-page__expiry-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.strategy-basket-page__expiry-chip select {
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  color-scheme: dark;
+  font: inherit;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: 4px 18px 4px 8px;
+}
+
+.strategy-basket-page__expiry-chip span {
+  position: absolute;
+  right: 6px;
+  pointer-events: none;
+  color: var(--text-secondary);
+  font-size: 11px;
 }
 
 .strategy-basket-page__leg-premium {
@@ -334,6 +375,8 @@
   border-radius: var(--radius-sm);
   padding: 12px 0;
   font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
 }
 
 .strategy-basket-page__place-btn {

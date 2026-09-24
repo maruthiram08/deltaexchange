@@ -8,6 +8,14 @@ const SPOT = 86053.5;
 const STRIKE_STEP = 200;
 const LOT_SIZE = 0.001;
 
+const EXPIRIES = [
+  { code: "230926", label: "23 Sep", days: 1 },
+  { code: "240926", label: "24 Sep", days: 2 },
+  { code: "250926", label: "25 Sep", days: 3 },
+  { code: "300926", label: "30 Sep", days: 8 },
+];
+const daysFor = (code) => (EXPIRIES.find((e) => e.code === code) ?? EXPIRIES[0]).days;
+
 const DEFAULT_LEGS = [
   { id: 1, side: "Buy", optionType: "CE", strike: 86000, expiry: "230926", qty: 1, premium: 636 },
   { id: 2, side: "Sell", optionType: "CE", strike: 86600, expiry: "230926", qty: 1, premium: 410 },
@@ -105,6 +113,19 @@ export default function StrategyBasket() {
   const adjustQty = (id, delta) =>
     setLegs((prev) => prev.map((l) => (l.id === id ? { ...l, qty: Math.max(1, l.qty + delta) } : l)));
 
+  // Premium is an indicative estimate: it scales with the square root of time to expiry,
+  // anchored to the premium the leg was first added with so toggling back is lossless.
+  const changeExpiry = (id, code) =>
+    setLegs((prev) =>
+      prev.map((l) => {
+        if (l.id !== id) return l;
+        const basePremium = l.basePremium ?? l.premium;
+        const baseExpiry = l.baseExpiry ?? l.expiry;
+        const premium = Math.round(basePremium * Math.sqrt(daysFor(code) / daysFor(baseExpiry)));
+        return { ...l, expiry: code, premium, basePremium, baseExpiry };
+      })
+    );
+
   const removeLeg = (id) => setLegs((prev) => prev.filter((l) => l.id !== id));
 
   const addLeg = () => {
@@ -199,7 +220,23 @@ export default function StrategyBasket() {
               </div>
 
               <div className="strategy-basket-page__leg-bottom">
-                <span className="strategy-basket-page__leg-premium">Premium {leg.premium}</span>
+                <div className="strategy-basket-page__leg-meta">
+                  <label className="strategy-basket-page__expiry-chip">
+                    <select
+                      value={leg.expiry}
+                      onChange={(e) => changeExpiry(leg.id, e.target.value)}
+                      aria-label="Change expiry"
+                    >
+                      {EXPIRIES.map((e) => (
+                        <option key={e.code} value={e.code}>
+                          {e.label}
+                        </option>
+                      ))}
+                    </select>
+                    <span aria-hidden="true">▾</span>
+                  </label>
+                  <span className="strategy-basket-page__leg-premium">Premium {leg.premium}</span>
+                </div>
                 <div className="strategy-basket-page__qty-stepper">
                   <span className="strategy-basket-page__qty-label">Qty</span>
                   <button type="button" onClick={() => adjustQty(leg.id, -1)} aria-label="Decrease quantity">
