@@ -25,6 +25,7 @@ dist-ssr
 
 # Not part of the app
 *.md
+!README.md
 brag-output/
 .claude/
 .vercel
