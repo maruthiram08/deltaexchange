@@ -81,6 +81,8 @@ export default function StoryPlayer({ idea, onNext }) {
   const kind = kinds[beat];
 
   const [paused, setPaused] = useState(false);
+  // Bumped by "Replay story" so every part of the story remounts and plays from the pain again.
+  const [runKey, setRunKey] = useState(0);
   const timer = useRef({ startedAt: 0, left: null });
 
   // Starting a new beat forgets any time left over from the last one.
@@ -101,15 +103,30 @@ export default function StoryPlayer({ idea, onNext }) {
     };
   }, [beat, kind, kinds.length, paused, story.pain, story.punch, PACE]);
 
+  const lastBeat = kinds.length - 1;
+  const nextBeat = () => setBeat((b) => Math.min(lastBeat, b + 1));
+  const restartStory = () => {
+    timer.current.left = null;
+    setPaused(false);
+    setBeat(0);
+    setRunKey((k) => k + 1);
+  };
+
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key !== " " || ["BUTTON", "INPUT", "A"].includes(e.target.tagName)) return;
-      e.preventDefault();
-      setPaused((p) => !p);
+      if (["BUTTON", "INPUT", "A"].includes(e.target.tagName)) return;
+      if (e.key === " ") {
+        e.preventDefault();
+        setPaused((p) => !p);
+      } else if (e.key === "ArrowRight") {
+        setBeat((b) => Math.min(lastBeat, b + 1));
+      } else if (e.key === "ArrowLeft") {
+        setBeat((b) => Math.max(0, b - 1));
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [lastBeat]);
 
   const fade = reduced ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -12 } };
 
@@ -137,7 +154,7 @@ export default function StoryPlayer({ idea, onNext }) {
       </div>
 
       <AnimatePresence mode="wait">
-        <motion.div key={beat} className="player__beat" {...fade} transition={{ duration: 0.4 }}>
+        <motion.div key={`${beat}-${runKey}`} className="player__beat" {...fade} transition={{ duration: 0.4 }}>
           {kind === "pain" && (
             <div className="player__pain">
               <div className="player__labelrow">
@@ -152,6 +169,9 @@ export default function StoryPlayer({ idea, onNext }) {
                 )}
               </div>
               <PainLines text={story.pain} keys={story.punch} pace={PACE} reduced={reduced} />
+              <button type="button" className="player__step" onClick={nextBeat}>
+                Next →
+              </button>
             </div>
           )}
 
@@ -161,10 +181,16 @@ export default function StoryPlayer({ idea, onNext }) {
               <h2>
                 <Rich text={story.feature} />
               </h2>
-              {!story.demo && onNext && (
-                <button type="button" className="player__next player__next--solo" onClick={onNext}>
-                  Next feature →
+              {story.demo ? (
+                <button type="button" className="player__step" onClick={nextBeat}>
+                  Next →
                 </button>
+              ) : (
+                onNext && (
+                  <button type="button" className="player__next player__next--solo" onClick={onNext}>
+                    Next feature →
+                  </button>
+                )
               )}
             </div>
           )}
@@ -172,11 +198,12 @@ export default function StoryPlayer({ idea, onNext }) {
           {kind === "demo" && (
             <div className="player__action">
               <GhostDemo
-                key={idea.id}
+                key={`${idea.id}-${runKey}`}
                 start={story.demo.start}
                 steps={story.demo.steps}
                 prep={story.demo.prep}
                 paused={paused}
+                onRestart={restartStory}
                 end={
                   <>
                     {onNext && (

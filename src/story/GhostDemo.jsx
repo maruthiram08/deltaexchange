@@ -52,7 +52,7 @@ async function waitFor(doc, step, signal, sleep) {
   throw new Error(`Demo target not found: ${step.target}`);
 }
 
-export default function GhostDemo({ start, steps, prep = NO_PREP, paused = false, onDone, end }) {
+export default function GhostDemo({ start, steps, prep = NO_PREP, paused = false, onDone, onRestart, end }) {
   const { pace: PACE } = useScript();
   const frameRef = useRef(null);
   const pausedRef = useRef(paused);
@@ -202,8 +202,13 @@ export default function GhostDemo({ start, steps, prep = NO_PREP, paused = false
             {end}
             <div className="ghost__end-row">
               <button type="button" className="ghost__pill" onClick={replay}>
-                Replay
+                Replay demo
               </button>
+              {onRestart && (
+                <button type="button" className="ghost__pill" onClick={onRestart}>
+                  Replay story
+                </button>
+              )}
               <button type="button" className="ghost__pill" onClick={takeOver}>
                 I want to explore myself
               </button>
@@ -219,7 +224,12 @@ export default function GhostDemo({ start, steps, prep = NO_PREP, paused = false
       <div className="ghost__controls">
         {!(done && mode === "auto") && (
           <button type="button" onClick={replay}>
-            Replay
+            Replay demo
+          </button>
+        )}
+        {!(done && mode === "auto") && onRestart && (
+          <button type="button" onClick={onRestart}>
+            Replay story
           </button>
         )}
         {mode === "auto" && !done && (

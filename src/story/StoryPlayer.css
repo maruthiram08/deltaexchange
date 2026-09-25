@@ -164,6 +164,7 @@
 }
 
 .player__next {
+  white-space: nowrap;
   font-size: var(--font-size-md);
   background: #ffffff;
   border: none;
@@ -193,4 +194,41 @@
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 6px 28px rgba(255, 120, 90, 0.35));
+}
+
+/* Skips the wait and moves to the next part of the story. */
+.player__step {
+  margin-top: var(--space-5);
+  background: rgba(110, 168, 254, 0.1);
+  border: 1px solid rgba(169, 200, 255, 0.4);
+  border-radius: var(--radius-pill);
+  color: #dfe8ff;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  padding: 10px 24px;
+  cursor: pointer;
+}
+
+.player__step:hover {
+  background: rgba(110, 168, 254, 0.2);
+  color: #ffffff;
+}
+
+/* Narrow screens: the chip goes under the label instead of hanging off its edge, where it would run off the screen. */
+@media (max-width: 800px) {
+  .player__labelrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .player__labelrow .player__tag {
+    position: static;
+    translate: none;
+    white-space: normal;
+    max-width: 100%;
+    text-align: center;
+  }
 }

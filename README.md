@@ -46,11 +46,13 @@ npm run lint      # run oxlint
 
 Everything a viewer reads or watches in the walkthrough lives in script files in **`src/story/scripts/`**.
 
-- **`onepager.js`** is the version written from the one-pager text.
-- **`draft.js`** is a place to try new wording. It starts from the one-pager script, so you only write what changes.
-- **`index.js`** lists the scripts and sets the default one that visitors see (`DEFAULT_SCRIPT`).
+- **`draft.js`** is the default script that visitors see. It starts from the one-pager script, so it only holds what changes: "they" in place of "he", shorter sentences that end on the impact, and rewritten demo captions.
+- **`onepager.js`** is the original, written from the one-pager text. It is the base the draft builds on.
+- **`index.js`** lists the scripts and sets the default one (`DEFAULT_SCRIPT`).
 
-To compare scripts, open `/#/watch?script=draft`. Any `?script=` in the address shows a Script switcher in the header. Visitors without it get the default script and no switcher.
+In the walkthrough, each part of a story (pain, idea, demo) moves on by itself and has a Next button. Arrow Right and Left move between parts, Up and Down move between features, and Space pauses. "Replay story" restarts from the pain, and "Replay demo" reruns only the phone.
+
+To compare scripts, open `/#/watch?script=onepager`. Any `?script=` in the address shows a Script switcher in the header. Visitors without it get the default script and no switcher.
 
 In a script file:
 

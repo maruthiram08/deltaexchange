@@ -9,7 +9,7 @@ export const SCRIPTS = {
 };
 
 // The script visitors see. Change this to switch the default for everyone.
-export const DEFAULT_SCRIPT = "onepager";
+export const DEFAULT_SCRIPT = "draft";
 
 // A story is the merge of the base script's story and this script's own fields. `null` removes a story.
 const mergeReel = (base, own) => {

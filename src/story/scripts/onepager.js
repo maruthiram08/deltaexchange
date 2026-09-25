@@ -22,17 +22,17 @@
 
 // Timing knobs, all in one place. Raise a number to slow that part down.
 export const PACE = {
-  painReadMsPerChar: 65, // pain beat length = characters x this...
-  painMinMs: 5000, //       ...but never shorter than this
-  painLineGapMs: 2000, //   delay between pain sentences appearing
-  painPunchPauseMs: 1500, // extra beat of silence before the last pain sentence, the key pain, lands
-  painPunchHoldMs: 4000, //  how long the key pain line and its chip stay on screen before the idea beat
-  ideaMs: 4200, //          how long the feature headline stays before the demo
+  painReadMsPerChar: 80, // pain beat length = characters x this...
+  painMinMs: 6500, //       ...but never shorter than this
+  painLineGapMs: 2500, //   delay between pain sentences appearing
+  painPunchPauseMs: 1900, // extra beat of silence before the last pain sentence, the key pain, lands
+  painPunchHoldMs: 5000, //  how long the key pain line and its chip stay on screen before the idea beat
+  ideaMs: 5300, //          how long the feature headline stays before the demo
   countdownFrom: 3, //      "Starting in 3, 2, 1" before each demo. Set to 0 to skip it.
   countdownStepMs: 1000, // length of each countdown number
-  glideMs: 1600, //         pause on each target after the cursor arrives, before highlight or tap
-  pressMs: 500, //          tap press duration
-  hold: 1.6, //             multiplier on every step's `hold`
+  glideMs: 2000, //         pause on each target after the cursor arrives, before highlight or tap
+  pressMs: 600, //          tap press duration
+  hold: 2.0, //             multiplier on every step's `hold`
 };
 
 // The start screen shown before a feature is picked. `**bold**` marks the highlighted phrases.
