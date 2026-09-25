@@ -1,4 +1,5 @@
-// THE CINEMA REEL SCRIPT. Everything a viewer reads or watches in the guided walkthrough lives in this one file.
+// SCRIPT "onepager": the walkthrough written from the one-pager text. Everything a viewer reads or watches lives in this file.
+// To try different wording, copy this file, or extend it in scripts/draft.js, then see scripts/index.js.
 //
 // Per feature (keyed by the id in ideas.js):
 //   pain     The pain point text, shown first. Use the teardown doc's wording. Put a `|` where the key pain starts
@@ -32,6 +33,14 @@ export const PACE = {
   glideMs: 1600, //         pause on each target after the cursor arrives, before highlight or tap
   pressMs: 500, //          tap press duration
   hold: 1.6, //             multiplier on every step's `hold`
+};
+
+// The start screen shown before a feature is picked. `**bold**` marks the highlighted phrases.
+export const INTRO = {
+  eyebrow: "The teardown",
+  text: "The app is already feature-rich, but some features are hard to access, resulting in **broken execution flows** & **delayed decision\u2011making**.",
+  start: "Start the show",
+  hint: "or pick any feature from the reel",
 };
 
 export const REEL = {

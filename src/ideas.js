@@ -1,8 +1,8 @@
 // The 19 pain-point-to-idea rows from the teardown doc, in one place for the mind map and the story
-// pages. `built: false` marks ideas that are not in the prototype yet. A row with an entry in story/reel.js plays in the theatre at
-// /watch/:id; the rest open the live screen with a guidance strip. Edit the film script in story/reel.js only.
+// pages. `built: false` marks ideas that are not in the prototype yet. A row with an entry in the active walkthrough script plays in the theatre at
+// /watch/:id; the rest open the live screen with a guidance strip. Edit the film scripts in story/scripts/ only.
 
-import { REEL } from "./story/reel";
+import { resolveScript, DEFAULT_SCRIPT } from "./story/scripts";
 
 const BASE = [
   {
@@ -131,7 +131,11 @@ const BASE = [
   { id: "paper-test", pain: "Test an algo before going live", fix: "Paper-test nudge", built: false },
 ];
 
-export const IDEAS = BASE.map((idea) => (REEL[idea.id] ? { ...idea, story: REEL[idea.id] } : idea));
+// The rows with the stories of one script attached.
+export const withStories = (reel) => BASE.map((idea) => (reel[idea.id] ? { ...idea, story: reel[idea.id] } : idea));
+
+// The default script's version, used by the landing page.
+export const IDEAS = withStories(resolveScript(DEFAULT_SCRIPT).reel);
 
 export const findIdea = (id) => IDEAS.find((idea) => idea.id === id);
 export const IDEA_COUNT = IDEAS.length;

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { PACE } from "./reel";
+import { useScript } from "./ScriptContext";
 import "./GhostDemo.css";
 
 // The live prototype in a phone-sized iframe, driven by a scripted cursor. The iframe is same-origin,
@@ -53,6 +53,7 @@ async function waitFor(doc, step, signal, sleep) {
 }
 
 export default function GhostDemo({ start, steps, prep = NO_PREP, paused = false, onDone, end }) {
+  const { pace: PACE } = useScript();
   const frameRef = useRef(null);
   const pausedRef = useRef(paused);
   useEffect(() => {
@@ -149,7 +150,7 @@ export default function GhostDemo({ start, steps, prep = NO_PREP, paused = false
       clearHighlight();
       setCount(null);
     };
-  }, [mode, runId, steps, prep]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mode, runId, steps, prep, PACE]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const replay = () => {
     setMode("auto");

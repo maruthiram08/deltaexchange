@@ -1,22 +1,63 @@
-import { Fragment, useCallback, useEffect, useRef } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { IDEAS, findIdea } from "../ideas";
+import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
+import { Link, Navigate, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import StoryPlayer, { Rich } from "../story/StoryPlayer";
+import { ScriptProvider, useScript } from "../story/ScriptContext";
+import { SCRIPTS, resolveScript } from "../story/scripts";
 import "./Theatre.css";
 
-// Films with a live prototype come first, then the idea-only ones, which have two screens instead of three.
-const PLAYABLE = [
-  ...IDEAS.filter((idea) => idea.story?.demo),
-  ...IDEAS.filter((idea) => idea.story && !idea.story.demo),
-];
+// The walkthrough plays one script at a time. `?script=draft` on the address picks another one and shows a switcher
+// in the header so scripts can be compared. The choice is remembered for the browser session, so going back to the
+// landing page and into the walkthrough again keeps it. Visitors who never used the parameter get the default script.
+const STORE_KEY = "walkthrough-script";
+const remembered = () => {
+  try {
+    return window.sessionStorage.getItem(STORE_KEY);
+  } catch {
+    return null;
+  }
+};
 
 export default function Theatre() {
+  const [params] = useSearchParams();
+  const asked = params.get("script") ?? remembered();
+  const scriptId = resolveScript(asked).id;
+  useEffect(() => {
+    if (!params.has("script")) return;
+    try {
+      window.sessionStorage.setItem(STORE_KEY, scriptId);
+    } catch {
+      // Storage can be blocked. The choice then lasts for this page only.
+    }
+  }, [params, scriptId]);
+  return (
+    <ScriptProvider id={scriptId}>
+      <TheatreScreen switcher={asked !== null} />
+    </ScriptProvider>
+  );
+}
+
+function TheatreScreen({ switcher }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const idea = id ? findIdea(id) : null;
+  const { search } = useLocation();
+  const [, setParams] = useSearchParams();
+  const script = useScript();
+  const idea = id ? script.ideas.find((item) => item.id === id) : null;
   const reelRef = useRef(null);
 
-  const select = useCallback((next) => navigate(`/watch/${next}`, { replace: true }), [navigate]);
+  // Films with a live prototype come first, then the idea-only ones, which have two screens instead of three.
+  const PLAYABLE = useMemo(
+    () => [
+      ...script.ideas.filter((item) => item.story?.demo),
+      ...script.ideas.filter((item) => item.story && !item.story.demo),
+    ],
+    [script.ideas],
+  );
+
+  const select = useCallback(
+    (next) => navigate({ pathname: `/watch/${next}`, search }, { replace: true }),
+    [navigate, search],
+  );
 
   // The selected row glides to the middle of the reel.
   useEffect(() => {
@@ -34,9 +75,9 @@ export default function Theatre() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [id, select]);
+  }, [id, select, PLAYABLE]);
 
-  if (id && !idea?.story) return <Navigate to="/watch" replace />;
+  if (id && !idea?.story) return <Navigate to={{ pathname: "/watch", search }} replace />;
 
   const at = PLAYABLE.findIndex((item) => item.id === id);
   const upNext = at >= 0 ? PLAYABLE[at + 1] : null;
@@ -48,6 +89,18 @@ export default function Theatre() {
           ← Back
         </Link>
         <span className="theatre__title">Guided walkthrough</span>
+        {switcher && (
+          <label className="theatre__script">
+            Script
+            <select value={script.id} onChange={(e) => setParams({ script: e.target.value }, { replace: true })}>
+              {Object.entries(SCRIPTS).map(([key, entry]) => (
+                <option key={key} value={key}>
+                  {entry.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <span className="theatre__legend">
           <span className="theatre__kind is-live">▶</span> Live prototype
           <span className="theatre__kind">◇</span> Idea only
@@ -89,19 +142,18 @@ export default function Theatre() {
         <section className="theatre__screen" aria-live="polite">
           {!idea && (
             <div className="theatre__empty">
-              <p className="theatre__eyebrow">The teardown</p>
+              <p className="theatre__eyebrow">{script.intro.eyebrow}</p>
               <p className="theatre__intro">
-                The app is already feature-rich, but some features are hard to access, resulting in{" "}
-                <em>broken execution flows</em> &amp; <em>delayed decision&#8209;making</em>.
+                <Rich text={script.intro.text} />
               </p>
               <button type="button" className="theatre__play" onClick={() => select(PLAYABLE[0].id)}>
-                <span aria-hidden="true">▶</span> Start the show
+                <span aria-hidden="true">▶</span> {script.intro.start}
               </button>
-              <p className="theatre__hint">or pick any feature from the reel</p>
+              <p className="theatre__hint">{script.intro.hint}</p>
             </div>
           )}
           {idea && (
-            <StoryPlayer key={idea.id} idea={idea} onNext={upNext ? () => select(upNext.id) : null} />
+            <StoryPlayer key={`${script.id}:${idea.id}`} idea={idea} onNext={upNext ? () => select(upNext.id) : null} />
           )}
         </section>
       </div>

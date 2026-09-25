@@ -5,7 +5,7 @@ import "./VantaBackground.css";
 const EFFECTS = {
   halo: {
     load: () => import("vanta/dist/vanta.halo.min"),
-    options: { backgroundColor: 0x05060a, baseColor: 0x0b2a7a, color2: 0x4b6cff, size: 1.4, amplitudeFactor: 1.0, xOffset: 0.28, yOffset: 0 },
+    options: { backgroundColor: 0x05060a, baseColor: 0x0b2a7a, color2: 0x4b6cff, size: 0.9, amplitudeFactor: 0.9, xOffset: 0.05, yOffset: 0, speed: 0.3 },
   },
   net: {
     load: () => import("vanta/dist/vanta.net.min"),

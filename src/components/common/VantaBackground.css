@@ -1,6 +1,12 @@
 .vanta-bg {
   position: fixed;
-  inset: 0;
+  /* Only the right side of the page, fading in from the left, so the animation stays out of the headline area. */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 46%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 40%);
+  mask-image: linear-gradient(to right, transparent, #000 40%);
   z-index: -1;
   pointer-events: none;
   opacity: 0;

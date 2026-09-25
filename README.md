@@ -44,14 +44,23 @@ npm run lint      # run oxlint
 
 ## Edit the walkthrough script
 
-Everything a viewer reads or watches in the walkthrough lives in one file: **`src/story/reel.js`**.
+Everything a viewer reads or watches in the walkthrough lives in script files in **`src/story/scripts/`**.
 
-- **Stories:** for each feature id, the pain text, an optional category tag, the feature text (`**bold**` marks highlighted words) and an optional `demo`.
+- **`onepager.js`** is the version written from the one-pager text.
+- **`draft.js`** is a place to try new wording. It starts from the one-pager script, so you only write what changes.
+- **`index.js`** lists the scripts and sets the default one that visitors see (`DEFAULT_SCRIPT`).
+
+To compare scripts, open `/#/watch?script=draft`. Any `?script=` in the address shows a Script switcher in the header. Visitors without it get the default script and no switcher.
+
+In a script file:
+
+- **Stories:** for each feature id, the pain text, an optional category tag, the feature text (`**bold**` marks highlighted words) and an optional `demo`. In `draft.js`, the fields you give replace the one-pager ones, and `null` removes a story.
+- **Start screen:** `INTRO` sets the eyebrow, the sentence, the button and the hint.
 - **Impact line:** the last pain sentence is shown as the key pain. Put a `|` inside a sentence to split it into a setup and an impact line, or set `punch: 2` when two pains matter. A story with no `demo` has two screens and is listed under "Ideas without a prototype".
 - **Demo steps:** a start route, optional silent `prep` taps, and a list of `steps`. Each step has a CSS `target`, an `action` (`move` or `click`), a `caption` and a `hold` time.
-- **Timing:** one `PACE` block at the top controls reading time, the pause before the impact line, the countdown, cursor speed and caption hold.
+- **Timing:** a `PACE` block controls reading time, the pause before the impact line, the countdown, cursor speed and caption hold. A script can override only the values it lists.
 
-To add a story, add an entry to `reel.js` under the feature's id. The feature list, labels and ordering are in `src/ideas.js`.
+To add a new script, create `src/story/scripts/<name>.js` exporting `REEL` (and optionally `PACE` and `INTRO`), then register it in `index.js`. The feature list, labels and ordering are in `src/ideas.js`.
 
 ### How the live demo works
 
@@ -62,7 +71,7 @@ The demo loads the running prototype in a same-origin iframe. A script finds rea
 ```
 src/
   pages/            Landing page, walkthrough theatre and each prototype screen
-  story/            reel.js (the script), StoryPlayer, GhostDemo (scripted cursor)
+  story/            scripts/ (the walkthrough scripts), StoryPlayer, GhostDemo (scripted cursor)
   ideas.js          The 19 improvements: labels, routes and guidance text
   pageRegistry.js   Every prototype screen and its route
   riskGate.js       In-memory "first leveraged trade" flag for the demo

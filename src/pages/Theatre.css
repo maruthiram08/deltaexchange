@@ -212,8 +212,7 @@
   letter-spacing: -0.015em;
 }
 
-.theatre__intro em {
-  font-style: normal;
+.theatre__intro strong {
   font-weight: 800;
   background: linear-gradient(90deg, #ffffff 10%, #a9c8ff 55%, #c1a8ff);
   -webkit-background-clip: text;
@@ -308,4 +307,21 @@
     padding: var(--space-3);
     min-height: 560px;
   }
+}
+
+.theatre__script {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.theatre__script select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(169, 200, 255, 0.3);
+  border-radius: var(--radius-pill);
+  color: #dfe8ff;
+  font: inherit;
+  padding: 4px 10px;
 }

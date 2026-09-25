@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import GhostDemo from "./GhostDemo";
-import { PACE } from "./reel";
+import { useScript } from "./ScriptContext";
 import "./StoryPlayer.css";
 
 // Turns "**bold** text" into spans, so the doc's highlighted words stay highlighted.
@@ -16,10 +16,10 @@ const NAMES = { pain: "The pain", idea: "The idea", demo: "In action" };
 const sentences = (text) => text.split(/(?<=[.?!])\s+|\s*\|\s*/).filter(Boolean);
 // Timing of the pain screen. The last `keys` sentences are the key pains (usually one; a story whose doc lists two
 // separate pains sets `punch: 2`). The setup lines come first, then a beat of silence, then the key lines land.
-function painTimes(text, keys = 1) {
+function painTimes(text, keys, PACE) {
   const n = sentences(text).length;
   const gap = PACE.painLineGapMs / 1000;
-  const k = n > 1 ? Math.min(keys, n) : 0;
+  const k = n > 1 ? Math.min(keys ?? 1, n) : 0;
   const setup = n - k;
   const firstKey = n === 1 ? 0.4 : setup === 0 ? 0.4 : 0.4 + (setup - 1) * gap + PACE.painPunchPauseMs / 1000;
   const lastKey = k > 1 ? firstKey + (k - 1) * gap : firstKey;
@@ -27,16 +27,16 @@ function painTimes(text, keys = 1) {
 }
 
 // The pain beat lasts long enough to read the text and always leaves time with the key lines on screen.
-const readMs = (text, keys) => {
-  const t = painTimes(text, keys);
+const readMs = (text, keys, PACE) => {
+  const t = painTimes(text, keys, PACE);
   const base = text.length * PACE.painReadMsPerChar + (t.n > 1 ? PACE.painPunchPauseMs : 0);
   return Math.max(PACE.painMinMs, base, (t.lastKey + PACE.painPunchHoldMs / 1000) * 1000);
 };
 
 // The pain sentences appear one by one. The setup lines dim when the key lines land, larger and in a warm colour.
-function PainLines({ text, keys, reduced }) {
+function PainLines({ text, keys, pace, reduced }) {
   const lines = sentences(text);
-  const t = painTimes(text, keys);
+  const t = painTimes(text, keys, pace);
   const [punched, setPunched] = useState(false);
 
   useEffect(() => {
@@ -73,6 +73,7 @@ function PainLines({ text, keys, reduced }) {
 // Beats advance on their own, and the dots let the viewer jump.
 export default function StoryPlayer({ idea, onNext }) {
   const { story } = idea;
+  const { pace: PACE } = useScript();
   const reduced = useReducedMotion();
   // The beats a story has: the pain (if the doc gives one), the idea, and the demo (if there is a prototype).
   const kinds = [story.pain && "pain", "idea", story.demo && "demo"].filter(Boolean);
@@ -91,14 +92,14 @@ export default function StoryPlayer({ idea, onNext }) {
   useEffect(() => {
     if (paused || kind === "demo" || beat === kinds.length - 1) return undefined;
     const t = timer.current;
-    const total = t.left ?? (kind === "pain" ? readMs(story.pain, story.punch) : PACE.ideaMs);
+    const total = t.left ?? (kind === "pain" ? readMs(story.pain, story.punch, PACE) : PACE.ideaMs);
     t.startedAt = Date.now();
     const id = setTimeout(() => setBeat((b) => b + 1), total);
     return () => {
       clearTimeout(id);
       t.left = total - (Date.now() - t.startedAt);
     };
-  }, [beat, kind, kinds.length, paused, story.pain, story.punch]);
+  }, [beat, kind, kinds.length, paused, story.pain, story.punch, PACE]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -144,13 +145,13 @@ export default function StoryPlayer({ idea, onNext }) {
                 {story.tag && (
                   <motion.span
                     className="player__tag"
-                    {...(reduced ? {} : { initial: { opacity: 0, scale: 0.85 }, animate: { opacity: 1, scale: 1 }, transition: { delay: painTimes(story.pain, story.punch).lastKey + 1, duration: 0.5 } })}
+                    {...(reduced ? {} : { initial: { opacity: 0, scale: 0.85 }, animate: { opacity: 1, scale: 1 }, transition: { delay: painTimes(story.pain, story.punch, PACE).lastKey + 1, duration: 0.5 } })}
                   >
                     {story.tag}
                   </motion.span>
                 )}
               </div>
-              <PainLines text={story.pain} keys={story.punch} reduced={reduced} />
+              <PainLines text={story.pain} keys={story.punch} pace={PACE} reduced={reduced} />
             </div>
           )}
 
