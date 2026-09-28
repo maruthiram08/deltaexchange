@@ -148,10 +148,10 @@ const BASE = [
   {
     id: "hedge-mode",
     pain: "Hold long and short at once",
-    fix: "Hedge Mode toggle",
+    fix: "Position Mode setting",
     to: "/trade",
     built: true,
-    tip: "Turn on Hedge Mode above the Long/Short buttons, select both sides, then place the order to see two BTCUSD positions on Positions.",
+    tip: "Tap the ⋮ icon, set Position Mode to Hedge, then place a normal order — it won't net against an existing position on Positions.",
   },
 ];
 

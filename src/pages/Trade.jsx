@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
 import RiskCheck from "../components/common/RiskCheck";
-import Toggle from "../components/common/Toggle";
+import { XIcon } from "../components/icons";
 import { shouldGate, markDone, leverageOr } from "../riskGate";
 import "./Trade.css";
 
@@ -29,30 +29,14 @@ const BIDS = [
 
 export default function Trade() {
   const navigate = useNavigate();
+  const [side, setSide] = useState("Long");
   const [qtyPct, setQtyPct] = useState(null);
   const [leverage, setLeverage] = useState(() => leverageOr(50));
   const [riskCheck, setRiskCheck] = useState(false);
-  const [hedgeMode, setHedgeMode] = useState(false);
-  const [activeSides, setActiveSides] = useState(() => new Set(["Long"]));
+  const [positionMode, setPositionMode] = useState("one-way");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const toggleSide = (s) => {
-    if (!hedgeMode) {
-      setActiveSides(new Set([s]));
-      return;
-    }
-    setActiveSides((prev) => {
-      const next = new Set(prev);
-      if (next.has(s)) {
-        if (next.size > 1) next.delete(s);
-      } else {
-        next.add(s);
-      }
-      return next;
-    });
-  };
-
-  const isHedged = activeSides.size > 1;
-  const primarySide = activeSides.has("Long") ? "Long" : "Short";
+  const placeOrder = () => navigate("/positions", { state: { side, positionMode } });
 
   return (
     <PhoneFrame footer={<BottomTabBar />}>
@@ -89,7 +73,9 @@ export default function Trade() {
             <span>ⓘ</span>
             <span>🔔</span>
             <span>⇅</span>
-            <span>⋮</span>
+            <button type="button" className="trade-page__more" onClick={() => setSettingsOpen(true)}>
+              ⋮
+            </button>
           </div>
         </div>
 
@@ -131,41 +117,22 @@ export default function Trade() {
           </div>
 
           <div className="trade-page__panel">
-            <div className="trade-page__hedge-row">
-              <Toggle
-                checked={hedgeMode}
-                onChange={(v) => {
-                  setHedgeMode(v);
-                  if (!v) setActiveSides(new Set([primarySide]));
-                }}
-                label="Hedge Mode"
-              />
-            </div>
-
-            <div className={`trade-page__side-toggle${hedgeMode ? " is-hedge" : ""}`}>
+            <div className="trade-page__side-toggle">
               <button
                 type="button"
-                className={`trade-page__side-btn is-long${activeSides.has("Long") ? " is-active" : ""}`}
-                onClick={() => toggleSide("Long")}
+                className={`trade-page__side-btn is-long${side === "Long" ? " is-active" : ""}`}
+                onClick={() => setSide("Long")}
               >
-                {hedgeMode && <span className="trade-page__side-check">{activeSides.has("Long") ? "☑" : "☐"}</span>}
                 Long
               </button>
               <button
                 type="button"
-                className={`trade-page__side-btn is-short${activeSides.has("Short") ? " is-active" : ""}`}
-                onClick={() => toggleSide("Short")}
+                className={`trade-page__side-btn is-short${side === "Short" ? " is-active" : ""}`}
+                onClick={() => setSide("Short")}
               >
-                {hedgeMode && <span className="trade-page__side-check">{activeSides.has("Short") ? "☑" : "☐"}</span>}
                 Short
               </button>
             </div>
-
-            {hedgeMode && (
-              <div className="trade-page__hedge-hint">
-                Hold both Long and Short on BTCUSD at once, tracked as two separate positions.
-              </div>
-            )}
 
             <div className="trade-page__select-row">
               <div className="trade-page__select">{leverage}x ▾</div>
@@ -213,11 +180,9 @@ export default function Trade() {
             <button
               type="button"
               className="trade-page__submit"
-              onClick={() =>
-                shouldGate() ? setRiskCheck(true) : navigate("/positions", { state: { hedgeMode: isHedged } })
-              }
+              onClick={() => (shouldGate() ? setRiskCheck(true) : placeOrder())}
             >
-              {isHedged ? "Place Long + Short" : primarySide}
+              {side}
             </button>
 
             <div className="trade-page__checks">
@@ -245,7 +210,7 @@ export default function Trade() {
         {riskCheck && (
           <RiskCheck
             instrument="BTCUSD"
-            side={primarySide}
+            side={side}
             entryPrice={86077}
             leverage={leverage}
             onClose={() => setRiskCheck(false)}
@@ -253,9 +218,47 @@ export default function Trade() {
               setLeverage(chosen);
               markDone(chosen);
               setRiskCheck(false);
-              navigate("/positions", { state: { hedgeMode: isHedged } });
+              placeOrder();
             }}
           />
+        )}
+
+        {settingsOpen && (
+          <div className="trade-page__overlay">
+            <div className="trade-page__modal">
+              <div className="trade-page__modal-header">
+                <span>Trade settings</span>
+                <button type="button" onClick={() => setSettingsOpen(false)}>
+                  <XIcon size={16} />
+                </button>
+              </div>
+
+              <div className="trade-page__modal-section">
+                <div className="trade-page__modal-label">Position Mode</div>
+                <div className="trade-page__modal-toggle">
+                  <button
+                    type="button"
+                    className={positionMode === "one-way" ? "is-active" : ""}
+                    onClick={() => setPositionMode("one-way")}
+                  >
+                    One-way
+                  </button>
+                  <button
+                    type="button"
+                    className={positionMode === "hedge" ? "is-active" : ""}
+                    onClick={() => setPositionMode("hedge")}
+                  >
+                    Hedge
+                  </button>
+                </div>
+                <div className="trade-page__modal-note">
+                  {positionMode === "hedge"
+                    ? "Hedge: hold Long and Short on the same contract at once, tracked as two separate positions."
+                    : "One-way: an opposite-side order nets against your existing position instead of opening a new one."}
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </PhoneFrame>

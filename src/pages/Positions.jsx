@@ -8,7 +8,7 @@ import "./Positions.css";
 export default function Positions() {
   const navigate = useNavigate();
   const location = useLocation();
-  const hedgeMode = Boolean(location.state?.hedgeMode);
+  const hedgeMode = location.state?.positionMode === "hedge";
   const [expanded, setExpanded] = useState(false);
   const [showClose, setShowClose] = useState(false);
   const [closePct, setClosePct] = useState("100%");
@@ -51,7 +51,7 @@ export default function Positions() {
 
         {hedgeMode && (
           <div className="positions-page__hedge-group">
-            <div className="positions-page__hedge-label">Hedge Mode · BTCUSD</div>
+            <div className="positions-page__hedge-label">Position Mode: Hedge · BTCUSD</div>
             <div className="positions-page__card positions-page__card--compact">
               <div className="positions-page__card-top">
                 <span className="positions-page__side-badge">L</span>
@@ -99,7 +99,8 @@ export default function Positions() {
               </div>
             </div>
             <div className="positions-page__hedge-note">
-              ⓘ Two independent positions on the same contract — netting is off while Hedge Mode is on.
+              ⓘ Position Mode is set to Hedge — this order didn't net against your existing BTCUSD position, so
+              both now sit here independently.
             </div>
           </div>
         )}
