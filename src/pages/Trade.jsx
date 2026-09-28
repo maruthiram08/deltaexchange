@@ -33,8 +33,8 @@ const ASK_LEVELS = [...ASKS].reverse();
 const BID_LEVELS = BIDS;
 
 const ORDER_TYPES = ["Market", "Limit", "Scaled"];
-const QTY_BY_PCT = { "25%": 3, "50%": 12, "75%": 30, "100%": 60 };
-const GUARDRAIL_THRESHOLD_PCT = 0.03;
+const QTY_BY_PCT = { "25%": 8, "50%": 20, "75%": 35, "100%": 60 };
+const GUARDRAIL_THRESHOLD_PCT = 0.0005;
 
 // walk-the-book: consume levels until qty is filled, return the volume-weighted fill price.
 function walkBook(levels, qty) {
@@ -55,7 +55,7 @@ function walkBook(levels, qty) {
 export default function Trade() {
   const navigate = useNavigate();
   const [side, setSide] = useState("Long");
-  const [qtyPct, setQtyPct] = useState(null);
+  const [qtyPct, setQtyPct] = useState("25%");
   const [leverage, setLeverage] = useState(() => leverageOr(50));
   const [riskCheck, setRiskCheck] = useState(false);
   const [positionMode, setPositionMode] = useState("one-way");
@@ -146,6 +146,26 @@ export default function Trade() {
             </button>
           </div>
         </div>
+
+        {orderType !== "Scaled" && (
+          <div className="trade-page__eqs trade-page__eqs--full">
+            <div className="trade-page__eqs-row">
+              <span>Est. slippage ({illustrativeQty} BTC {side.toLowerCase()})</span>
+              <span className={currentSlipUsd != null && currentSlipUsd > 0 ? "is-negative" : ""}>
+                {currentFill.complete && currentSlipUsd != null
+                  ? `~$${currentSlipUsd.toFixed(2)} (${currentSlipPct.toFixed(4)}%)`
+                  : "not enough visible depth"}
+              </span>
+            </div>
+            {cheaperSide && cheaperSide !== side && savingsUsd != null && (
+              <div className="trade-page__eqs-row trade-page__eqs-compare">
+                <span>
+                  {cheaperSide === "Long" ? "Buying" : "Selling"} costs ~${savingsUsd.toFixed(2)} less right now
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="trade-page__body">
           <div className="trade-page__book">
@@ -288,30 +308,6 @@ export default function Trade() {
               ))}
             </div>
 
-            {orderType !== "Scaled" && (
-              <div className="trade-page__eqs">
-                <div className="trade-page__eqs-row">
-                  <span>Est. slippage ({illustrativeQty} BTC {side.toLowerCase()})</span>
-                  <span className={currentSlipUsd != null && currentSlipUsd > 0 ? "is-negative" : ""}>
-                    {currentFill.complete && currentSlipUsd != null
-                      ? `~$${currentSlipUsd.toFixed(2)} (${currentSlipPct.toFixed(3)}%)`
-                      : "not enough visible depth"}
-                  </span>
-                </div>
-                {cheaperSide && cheaperSide !== side && savingsUsd != null && (
-                  <div className="trade-page__eqs-row trade-page__eqs-compare">
-                    <span>
-                      {cheaperSide === "Long" ? "Buying" : "Selling"} costs ~${savingsUsd.toFixed(2)} less right now
-                    </span>
-                  </div>
-                )}
-                <div className="trade-page__eqs-row trade-page__eqs-benchmark">
-                  <span>vs. Binance (est.)</span>
-                  <span>~$4.10</span>
-                </div>
-              </div>
-            )}
-
             <div className="trade-page__tpsl">
               <span className="trade-page__radio" /> Target/SL
             </div>
@@ -320,39 +316,6 @@ export default function Trade() {
               <span>Req. | Avbl.</span>
               <span>0 | 6.58 USD</span>
             </div>
-
-            {guardrail && (
-              <div className="trade-page__guardrail">
-                <div className="trade-page__guardrail-text">
-                  {guardrail.complete
-                    ? `Spread is wide right now — this market order is estimated at ~${guardrail.pct.toFixed(3)}% slippage.`
-                    : "Not enough visible depth to fill this size reliably at a good price."}
-                </div>
-                <div className="trade-page__guardrail-actions">
-                  <button
-                    type="button"
-                    className="trade-page__guardrail-btn is-limit"
-                    onClick={() => {
-                      setOrderType("Limit");
-                      setGuardrail(null);
-                    }}
-                  >
-                    Switch to Limit
-                  </button>
-                  <button
-                    type="button"
-                    className="trade-page__guardrail-btn is-anyway"
-                    onClick={() => {
-                      setGuardrail(null);
-                      if (shouldGate()) setRiskCheck(true);
-                      else placeOrder();
-                    }}
-                  >
-                    Place anyway
-                  </button>
-                </div>
-              </div>
-            )}
 
             <button type="button" className="trade-page__submit" onClick={submitOrder}>
               {orderType === "Scaled" ? `${side} · Scaled` : side}
@@ -465,6 +428,47 @@ export default function Trade() {
                     {orderType === t && <span>✓</span>}
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {guardrail && (
+          <div className="trade-page__overlay">
+            <div className="trade-page__modal">
+              <div className="trade-page__modal-header">
+                <span>{guardrail.complete ? "Spread is wide right now" : "Not enough visible depth"}</span>
+                <button type="button" onClick={() => setGuardrail(null)}>
+                  <XIcon size={16} />
+                </button>
+              </div>
+              <div className="trade-page__modal-note trade-page__guardrail-note">
+                {guardrail.complete
+                  ? `This market order is estimated at ~${guardrail.pct.toFixed(4)}% slippage.`
+                  : "This size can't be filled reliably at a good price with what's currently visible in the book."}
+              </div>
+              <div className="trade-page__guardrail-actions">
+                <button
+                  type="button"
+                  className="trade-page__guardrail-btn is-limit"
+                  onClick={() => {
+                    setOrderType("Limit");
+                    setGuardrail(null);
+                  }}
+                >
+                  Switch to Limit
+                </button>
+                <button
+                  type="button"
+                  className="trade-page__guardrail-btn is-anyway"
+                  onClick={() => {
+                    setGuardrail(null);
+                    if (shouldGate()) setRiskCheck(true);
+                    else placeOrder();
+                  }}
+                >
+                  Place anyway
+                </button>
               </div>
             </div>
           </div>

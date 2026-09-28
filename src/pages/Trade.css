@@ -349,9 +349,14 @@
   background: var(--bg-surface-raised);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
+  margin-bottom: var(--space-3);
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.trade-page__eqs--full {
+  margin: 0 var(--space-4) var(--space-3);
 }
 
 .trade-page__eqs-row {
@@ -383,20 +388,9 @@
   font-size: 10px;
 }
 
-.trade-page__guardrail {
-  background: var(--bg-surface-raised);
-  border: 1px solid var(--accent-orange);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.trade-page__guardrail-text {
+.trade-page__guardrail-note {
   color: var(--text-secondary);
-  font-size: 10px;
-  line-height: 1.5;
+  font-size: var(--font-size-xs);
 }
 
 .trade-page__guardrail-actions {
@@ -407,9 +401,9 @@
 .trade-page__guardrail-btn {
   flex: 1;
   border-radius: var(--radius-sm);
-  padding: 8px 0;
+  padding: 12px 0;
   font-weight: var(--font-weight-bold);
-  font-size: 10px;
+  font-size: var(--font-size-sm);
   border: none;
 }
 
