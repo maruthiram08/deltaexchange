@@ -111,6 +111,16 @@
 
 .trade-page__funding-value {
   font-weight: var(--font-weight-bold);
+  margin-bottom: 4px;
+}
+
+.trade-page__funding-link {
+  background: none;
+  border: none;
+  color: var(--accent-orange);
+  font-weight: var(--font-weight-bold);
+  font-size: 10px;
+  padding: 0;
   margin-bottom: var(--space-2);
 }
 
@@ -170,6 +180,21 @@
   flex-direction: column;
   gap: var(--space-2);
   overflow-y: auto;
+}
+
+.trade-page__hedge-row {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 2px;
+}
+
+.trade-page__hedge-hint {
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.4;
+  background: var(--bg-surface-raised);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
 }
 
 .trade-page__side-toggle {

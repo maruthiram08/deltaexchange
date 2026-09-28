@@ -11,6 +11,8 @@ import OptionChain from "./pages/OptionChain";
 import StrategyBuilder from "./pages/StrategyBuilder";
 import StrategyBasket from "./pages/StrategyBasket";
 import AnalyzePayoff from "./pages/AnalyzePayoff";
+import OrderHistory from "./pages/OrderHistory";
+import FundingLeaderboard from "./pages/FundingLeaderboard";
 
 export const PAGE_REGISTRY = [
   {
@@ -37,6 +39,13 @@ export const PAGE_REGISTRY = [
     pages: [
       { id: "charts", path: "/charts", label: "Charts + ZipTrade", component: ChartsZipTrade },
       { id: "positions", path: "/positions", label: "Positions", component: Positions },
+    ],
+  },
+  {
+    section: "Portfolio",
+    pages: [
+      { id: "order-history", path: "/order-history", label: "Order history", component: OrderHistory },
+      { id: "funding-leaderboard", path: "/funding-leaderboard", label: "Funding leaderboard", component: FundingLeaderboard },
     ],
   },
 ];

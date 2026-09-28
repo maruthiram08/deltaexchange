@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
 import { XIcon, SearchIcon, ChartLineIcon } from "../components/icons";
@@ -7,6 +7,8 @@ import "./Positions.css";
 
 export default function Positions() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const hedgeMode = Boolean(location.state?.hedgeMode);
   const [expanded, setExpanded] = useState(false);
   const [showClose, setShowClose] = useState(false);
   const [closePct, setClosePct] = useState("100%");
@@ -21,10 +23,12 @@ export default function Positions() {
 
         <div className="positions-page__tabs">
           <span>Balances</span>
-          <span className="is-active">Positions (1)</span>
+          <span className="is-active">Positions ({hedgeMode ? 3 : 1})</span>
           <span>Orders</span>
           <span>Stop Orders</span>
-          <span className="positions-page__history">↻</span>
+          <button type="button" className="positions-page__history" onClick={() => navigate("/order-history")}>
+            ↻
+          </button>
         </div>
 
         <div className="positions-page__upnl-card">
@@ -44,6 +48,61 @@ export default function Positions() {
           <button type="button" className="positions-page__chip">☰ Sort</button>
           <button type="button" className="positions-page__close-all">Close All</button>
         </div>
+
+        {hedgeMode && (
+          <div className="positions-page__hedge-group">
+            <div className="positions-page__hedge-label">Hedge Mode · BTCUSD</div>
+            <div className="positions-page__card positions-page__card--compact">
+              <div className="positions-page__card-top">
+                <span className="positions-page__side-badge">L</span>
+                <span className="positions-page__symbol">BTCUSD</span>
+                <span className="positions-page__pct is-positive">+0.42 %</span>
+              </div>
+              <div className="positions-page__grid">
+                <div>
+                  <div className="positions-page__label">Quantity</div>
+                  <div className="positions-page__value is-positive">
+                    +1 <span>Lot</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="positions-page__label">Entry Price</div>
+                  <div className="positions-page__value">86031.5</div>
+                </div>
+                <div>
+                  <div className="positions-page__label">UPL (M2M)</div>
+                  <div className="positions-page__value is-positive">+₹36.10</div>
+                </div>
+              </div>
+            </div>
+            <div className="positions-page__card positions-page__card--compact">
+              <div className="positions-page__card-top">
+                <span className="positions-page__side-badge is-short">S</span>
+                <span className="positions-page__symbol">BTCUSD</span>
+                <span className="positions-page__pct is-negative">-0.42 %</span>
+              </div>
+              <div className="positions-page__grid">
+                <div>
+                  <div className="positions-page__label">Quantity</div>
+                  <div className="positions-page__value is-negative">
+                    -1 <span>Lot</span>
+                  </div>
+                </div>
+                <div>
+                  <div className="positions-page__label">Entry Price</div>
+                  <div className="positions-page__value">86077.0</div>
+                </div>
+                <div>
+                  <div className="positions-page__label">UPL (M2M)</div>
+                  <div className="positions-page__value is-negative">-₹36.10</div>
+                </div>
+              </div>
+            </div>
+            <div className="positions-page__hedge-note">
+              ⓘ Two independent positions on the same contract — netting is off while Hedge Mode is on.
+            </div>
+          </div>
+        )}
 
         <div className="positions-page__card">
           <div className="positions-page__card-top">

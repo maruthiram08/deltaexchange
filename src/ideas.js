@@ -129,6 +129,30 @@ const BASE = [
   },
   { id: "plain-english-algo", pain: "Turn an idea into an algo", fix: "Plain English to Algo", built: false },
   { id: "paper-test", pain: "Test an algo before going live", fix: "Paper-test nudge", built: false },
+  {
+    id: "order-history-mobile",
+    pain: "Read order history on a phone",
+    fix: "Card-based Order History",
+    to: "/order-history",
+    built: true,
+    tip: "Tap the ↻ icon on Positions. Cancelled orders show a plain-language reason, and multi-fill orders group into one card.",
+  },
+  {
+    id: "funding-leaderboard",
+    pain: "Find the best funding-rate trade",
+    fix: "Funding Rate Leaderboard",
+    to: "/funding-leaderboard",
+    built: true,
+    tip: "Tap 'View funding leaderboard' under the funding row on Trade to see top positive and negative rates across contracts.",
+  },
+  {
+    id: "hedge-mode",
+    pain: "Hold long and short at once",
+    fix: "Hedge Mode toggle",
+    to: "/trade",
+    built: true,
+    tip: "Turn on Hedge Mode above the Long/Short buttons, select both sides, then place the order to see two BTCUSD positions on Positions.",
+  },
 ];
 
 // The rows with the stories of one script attached.

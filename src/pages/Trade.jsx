@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
 import RiskCheck from "../components/common/RiskCheck";
+import Toggle from "../components/common/Toggle";
 import { shouldGate, markDone, leverageOr } from "../riskGate";
 import "./Trade.css";
 
@@ -28,10 +29,30 @@ const BIDS = [
 
 export default function Trade() {
   const navigate = useNavigate();
-  const [side, setSide] = useState("Long");
   const [qtyPct, setQtyPct] = useState(null);
   const [leverage, setLeverage] = useState(() => leverageOr(50));
   const [riskCheck, setRiskCheck] = useState(false);
+  const [hedgeMode, setHedgeMode] = useState(false);
+  const [activeSides, setActiveSides] = useState(() => new Set(["Long"]));
+
+  const toggleSide = (s) => {
+    if (!hedgeMode) {
+      setActiveSides(new Set([s]));
+      return;
+    }
+    setActiveSides((prev) => {
+      const next = new Set(prev);
+      if (next.has(s)) {
+        if (next.size > 1) next.delete(s);
+      } else {
+        next.add(s);
+      }
+      return next;
+    });
+  };
+
+  const isHedged = activeSides.size > 1;
+  const primarySide = activeSides.has("Long") ? "Long" : "Short";
 
   return (
     <PhoneFrame footer={<BottomTabBar />}>
@@ -76,6 +97,13 @@ export default function Trade() {
           <div className="trade-page__book">
             <div className="trade-page__funding-label">Funding (8h) / Countdown</div>
             <div className="trade-page__funding-value">0.0100% / 02:55:19</div>
+            <button
+              type="button"
+              className="trade-page__funding-link"
+              onClick={() => navigate("/funding-leaderboard")}
+            >
+              View funding leaderboard ›
+            </button>
 
             <div className="trade-page__book-header">
               <span>Price (USD)</span>
@@ -103,22 +131,39 @@ export default function Trade() {
           </div>
 
           <div className="trade-page__panel">
+            <div className="trade-page__hedge-row">
+              <Toggle
+                checked={hedgeMode}
+                onChange={(v) => {
+                  setHedgeMode(v);
+                  if (!v) setActiveSides(new Set([primarySide]));
+                }}
+                label="Hedge Mode"
+              />
+            </div>
+
             <div className="trade-page__side-toggle">
               <button
                 type="button"
-                className={`trade-page__side-btn is-long${side === "Long" ? " is-active" : ""}`}
-                onClick={() => setSide("Long")}
+                className={`trade-page__side-btn is-long${activeSides.has("Long") ? " is-active" : ""}`}
+                onClick={() => toggleSide("Long")}
               >
                 Long
               </button>
               <button
                 type="button"
-                className={`trade-page__side-btn is-short${side === "Short" ? " is-active" : ""}`}
-                onClick={() => setSide("Short")}
+                className={`trade-page__side-btn is-short${activeSides.has("Short") ? " is-active" : ""}`}
+                onClick={() => toggleSide("Short")}
               >
                 Short
               </button>
             </div>
+
+            {hedgeMode && (
+              <div className="trade-page__hedge-hint">
+                Hold both Long and Short on BTCUSD at once, tracked as two separate positions.
+              </div>
+            )}
 
             <div className="trade-page__select-row">
               <div className="trade-page__select">{leverage}x ▾</div>
@@ -163,8 +208,14 @@ export default function Trade() {
               <span>0 | 6.58 USD</span>
             </div>
 
-            <button type="button" className="trade-page__submit" onClick={() => (shouldGate() ? setRiskCheck(true) : navigate("/positions"))}>
-              {side}
+            <button
+              type="button"
+              className="trade-page__submit"
+              onClick={() =>
+                shouldGate() ? setRiskCheck(true) : navigate("/positions", { state: { hedgeMode: isHedged } })
+              }
+            >
+              {isHedged ? "Place Long + Short" : primarySide}
             </button>
 
             <div className="trade-page__checks">
@@ -192,7 +243,7 @@ export default function Trade() {
         {riskCheck && (
           <RiskCheck
             instrument="BTCUSD"
-            side={side}
+            side={primarySide}
             entryPrice={86077}
             leverage={leverage}
             onClose={() => setRiskCheck(false)}
@@ -200,7 +251,7 @@ export default function Trade() {
               setLeverage(chosen);
               markDone(chosen);
               setRiskCheck(false);
-              navigate("/positions");
+              navigate("/positions", { state: { hedgeMode: isHedged } });
             }}
           />
         )}

@@ -46,6 +46,45 @@
 .positions-page__history {
   margin-left: auto;
   color: var(--text-secondary);
+  background: none;
+  border: none;
+  font-size: inherit;
+  padding: 0;
+}
+
+.positions-page__hedge-group {
+  margin: 0 var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.positions-page__hedge-label {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-bold);
+}
+
+.positions-page__card--compact {
+  margin: 0;
+  padding: var(--space-3);
+}
+
+.positions-page__card--compact .positions-page__grid {
+  margin-bottom: 0;
+}
+
+.positions-page__side-badge.is-short {
+  background: var(--negative);
+  color: #3a0b13;
+}
+
+.positions-page__hedge-note {
+  color: var(--text-tertiary);
+  font-size: 10px;
+  line-height: 1.5;
+  background: var(--bg-surface-raised);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
 }
 
 .positions-page__upnl-card {
