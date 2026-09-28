@@ -27,6 +27,31 @@ const BIDS = [
   { price: "86073.0", size: "14.343" },
 ];
 
+// Best price first, matching the order a market order actually consumes the book in —
+// asks are listed worst-to-best on screen (closest to spot last), so reverse them.
+const ASK_LEVELS = [...ASKS].reverse();
+const BID_LEVELS = BIDS;
+
+const ORDER_TYPES = ["Market", "Limit", "Scaled"];
+const QTY_BY_PCT = { "25%": 3, "50%": 12, "75%": 30, "100%": 60 };
+const GUARDRAIL_THRESHOLD_PCT = 0.03;
+
+// walk-the-book: consume levels until qty is filled, return the volume-weighted fill price.
+function walkBook(levels, qty) {
+  let remaining = qty;
+  let cost = 0;
+  for (const lvl of levels) {
+    if (remaining <= 0) break;
+    const price = parseFloat(lvl.price);
+    const size = parseFloat(lvl.size);
+    const take = Math.min(remaining, size);
+    cost += take * price;
+    remaining -= take;
+  }
+  const filled = qty - remaining;
+  return { vwap: filled > 0 ? cost / filled : null, complete: remaining <= 0 };
+}
+
 export default function Trade() {
   const navigate = useNavigate();
   const [side, setSide] = useState("Long");
@@ -35,8 +60,51 @@ export default function Trade() {
   const [riskCheck, setRiskCheck] = useState(false);
   const [positionMode, setPositionMode] = useState("one-way");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [orderType, setOrderType] = useState("Limit");
+  const [orderTypeOpen, setOrderTypeOpen] = useState(false);
+  const [legCount, setLegCount] = useState(10);
+  const [distribution, setDistribution] = useState("Flat");
+  const [guardrail, setGuardrail] = useState(null);
+
+  const bestAsk = parseFloat(ASK_LEVELS[0].price);
+  const bestBid = parseFloat(BID_LEVELS[0].price);
+  const illustrativeQty = QTY_BY_PCT[qtyPct] ?? QTY_BY_PCT["25%"];
+
+  const buyFill = walkBook(ASK_LEVELS, illustrativeQty);
+  const sellFill = walkBook(BID_LEVELS, illustrativeQty);
+  const buySlipUsd = buyFill.vwap != null ? (buyFill.vwap - bestAsk) * illustrativeQty : null;
+  const sellSlipUsd = sellFill.vwap != null ? (bestBid - sellFill.vwap) * illustrativeQty : null;
+  const currentFill = side === "Long" ? buyFill : sellFill;
+  const currentSlipUsd = side === "Long" ? buySlipUsd : sellSlipUsd;
+  const otherSlipUsd = side === "Long" ? sellSlipUsd : buySlipUsd;
+  const currentBest = side === "Long" ? bestAsk : bestBid;
+  const currentSlipPct = currentFill.vwap != null ? (Math.abs(currentFill.vwap - currentBest) / currentBest) * 100 : null;
+  const cheaperSide =
+    currentSlipUsd != null && otherSlipUsd != null
+      ? currentSlipUsd <= otherSlipUsd
+        ? side
+        : side === "Long"
+          ? "Short"
+          : "Long"
+      : null;
+  const savingsUsd = currentSlipUsd != null && otherSlipUsd != null ? Math.abs(currentSlipUsd - otherSlipUsd) : null;
 
   const placeOrder = () => navigate("/positions", { state: { side, positionMode } });
+
+  const submitOrder = () => {
+    if (orderType === "Market" && (!currentFill.complete || currentSlipPct > GUARDRAIL_THRESHOLD_PCT)) {
+      setGuardrail({
+        pct: currentSlipPct,
+        complete: currentFill.complete,
+      });
+      return;
+    }
+    if (shouldGate()) {
+      setRiskCheck(true);
+    } else {
+      placeOrder();
+    }
+  };
 
   return (
     <PhoneFrame footer={<BottomTabBar />}>
@@ -136,24 +204,76 @@ export default function Trade() {
 
             <div className="trade-page__select-row">
               <div className="trade-page__select">{leverage}x ▾</div>
-              <div className="trade-page__select">Limit ▾</div>
+              <button type="button" className="trade-page__select is-btn" onClick={() => setOrderTypeOpen(true)}>
+                {orderType} ▾
+              </button>
             </div>
 
-            <div className="trade-page__field">
-              <span className="trade-page__field-label">Limit Price USD</span>
-              <span className="trade-page__field-link">Best Bid</span>
-            </div>
+            {orderType !== "Market" && orderType !== "Scaled" && (
+              <div className="trade-page__field">
+                <span className="trade-page__field-label">Limit Price USD</span>
+                <span className="trade-page__field-link">Best Bid</span>
+              </div>
+            )}
 
-            <div className="trade-page__field trade-page__field--stacked">
-              <div className="trade-page__field-row">
-                <span className="trade-page__field-label">Qty</span>
-                <span className="trade-page__field-unit">Lot ▾</span>
+            {orderType === "Scaled" ? (
+              <>
+                <div className="trade-page__field">
+                  <span className="trade-page__field-label">Lowest price</span>
+                  <span className="trade-page__field-unit">USDT</span>
+                </div>
+                <div className="trade-page__field">
+                  <span className="trade-page__field-label">Highest price</span>
+                  <span className="trade-page__field-unit">USDT</span>
+                </div>
+                <div className="trade-page__field">
+                  <span className="trade-page__field-label">Order quantity (2–50)</span>
+                  <div className="trade-page__stepper">
+                    <button type="button" onClick={() => setLegCount((n) => Math.max(2, n - 1))}>
+                      −
+                    </button>
+                    <span>{legCount}</span>
+                    <button type="button" onClick={() => setLegCount((n) => Math.min(50, n + 1))}>
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="trade-page__field">
+                  <span className="trade-page__field-label">Total quantity</span>
+                  <span className="trade-page__field-unit">BTC</span>
+                </div>
+                <div className="trade-page__scaled-dist-label">
+                  Size distribution <span className="trade-page__scaled-info">ⓘ</span>
+                </div>
+                <div className="trade-page__pct-row">
+                  {["Flat", "Ascending", "Descending"].map((d) => (
+                    <button
+                      key={d}
+                      type="button"
+                      className={`trade-page__dist-btn${distribution === d ? " is-active" : ""}`}
+                      onClick={() => setDistribution(d)}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+                <div className="trade-page__req-row">
+                  <span>Avg</span>
+                  <span>–</span>
+                </div>
+              </>
+            ) : (
+              <div className="trade-page__field trade-page__field--stacked">
+                <div className="trade-page__field-row">
+                  <span className="trade-page__field-label">Qty</span>
+                  <span className="trade-page__field-unit">Lot ▾</span>
+                </div>
+                <div className="trade-page__field-row">
+                  <span className="trade-page__field-hint">~BTC</span>
+                  <span className="trade-page__field-hint">1 Lot = 0.001 BTC</span>
+                </div>
               </div>
-              <div className="trade-page__field-row">
-                <span className="trade-page__field-hint">~BTC</span>
-                <span className="trade-page__field-hint">1 Lot = 0.001 BTC</span>
-              </div>
-            </div>
+            )}
 
             <div className="trade-page__pct-row">
               {["25%", "50%", "75%", "100%"].map((p) => (
@@ -168,6 +288,30 @@ export default function Trade() {
               ))}
             </div>
 
+            {orderType !== "Scaled" && (
+              <div className="trade-page__eqs">
+                <div className="trade-page__eqs-row">
+                  <span>Est. slippage ({illustrativeQty} BTC {side.toLowerCase()})</span>
+                  <span className={currentSlipUsd != null && currentSlipUsd > 0 ? "is-negative" : ""}>
+                    {currentFill.complete && currentSlipUsd != null
+                      ? `~$${currentSlipUsd.toFixed(2)} (${currentSlipPct.toFixed(3)}%)`
+                      : "not enough visible depth"}
+                  </span>
+                </div>
+                {cheaperSide && cheaperSide !== side && savingsUsd != null && (
+                  <div className="trade-page__eqs-row trade-page__eqs-compare">
+                    <span>
+                      {cheaperSide === "Long" ? "Buying" : "Selling"} costs ~${savingsUsd.toFixed(2)} less right now
+                    </span>
+                  </div>
+                )}
+                <div className="trade-page__eqs-row trade-page__eqs-benchmark">
+                  <span>vs. Binance (est.)</span>
+                  <span>~$4.10</span>
+                </div>
+              </div>
+            )}
+
             <div className="trade-page__tpsl">
               <span className="trade-page__radio" /> Target/SL
             </div>
@@ -177,12 +321,41 @@ export default function Trade() {
               <span>0 | 6.58 USD</span>
             </div>
 
-            <button
-              type="button"
-              className="trade-page__submit"
-              onClick={() => (shouldGate() ? setRiskCheck(true) : placeOrder())}
-            >
-              {side}
+            {guardrail && (
+              <div className="trade-page__guardrail">
+                <div className="trade-page__guardrail-text">
+                  {guardrail.complete
+                    ? `Spread is wide right now — this market order is estimated at ~${guardrail.pct.toFixed(3)}% slippage.`
+                    : "Not enough visible depth to fill this size reliably at a good price."}
+                </div>
+                <div className="trade-page__guardrail-actions">
+                  <button
+                    type="button"
+                    className="trade-page__guardrail-btn is-limit"
+                    onClick={() => {
+                      setOrderType("Limit");
+                      setGuardrail(null);
+                    }}
+                  >
+                    Switch to Limit
+                  </button>
+                  <button
+                    type="button"
+                    className="trade-page__guardrail-btn is-anyway"
+                    onClick={() => {
+                      setGuardrail(null);
+                      if (shouldGate()) setRiskCheck(true);
+                      else placeOrder();
+                    }}
+                  >
+                    Place anyway
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <button type="button" className="trade-page__submit" onClick={submitOrder}>
+              {orderType === "Scaled" ? `${side} · Scaled` : side}
             </button>
 
             <div className="trade-page__checks">
@@ -256,6 +429,42 @@ export default function Trade() {
                     ? "Hedge: hold Long and Short on the same contract at once, tracked as two separate positions."
                     : "One-way: an opposite-side order nets against your existing position instead of opening a new one."}
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {orderTypeOpen && (
+          <div className="trade-page__overlay" onClick={() => setOrderTypeOpen(false)}>
+            <div className="trade-page__modal" onClick={(e) => e.stopPropagation()}>
+              <div className="trade-page__modal-header">
+                <span>Order type</span>
+                <button type="button" onClick={() => setOrderTypeOpen(false)}>
+                  <XIcon size={16} />
+                </button>
+              </div>
+              <div className="trade-page__order-type-list">
+                {ORDER_TYPES.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className={`trade-page__order-type-item${orderType === t ? " is-active" : ""}`}
+                    onClick={() => {
+                      setOrderType(t);
+                      setOrderTypeOpen(false);
+                    }}
+                  >
+                    <div>
+                      <div className="trade-page__order-type-name">{t}</div>
+                      <div className="trade-page__order-type-desc">
+                        {t === "Market" && "Fill immediately at the best available price."}
+                        {t === "Limit" && "Fill only at your chosen price or better."}
+                        {t === "Scaled" && "Split a large order across a price range."}
+                      </div>
+                    </div>
+                    {orderType === t && <span>✓</span>}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
