@@ -224,6 +224,38 @@
   color: var(--text-primary);
 }
 
+.trade-page__side-toggle.is-hedge {
+  border: none;
+  overflow: visible;
+  gap: var(--space-2);
+}
+
+.trade-page__side-toggle.is-hedge .trade-page__side-btn {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.trade-page__side-toggle.is-hedge .trade-page__side-btn.is-long.is-active {
+  border: 1px solid var(--positive);
+  background: var(--positive-soft);
+  color: var(--positive);
+}
+
+.trade-page__side-toggle.is-hedge .trade-page__side-btn.is-short.is-active {
+  border: 1px solid var(--negative);
+  background: var(--negative-soft);
+  color: var(--negative);
+}
+
+.trade-page__side-check {
+  font-size: 12px;
+}
+
 .trade-page__select-row {
   display: flex;
   gap: var(--space-2);

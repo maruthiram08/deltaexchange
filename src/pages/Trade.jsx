@@ -142,12 +142,13 @@ export default function Trade() {
               />
             </div>
 
-            <div className="trade-page__side-toggle">
+            <div className={`trade-page__side-toggle${hedgeMode ? " is-hedge" : ""}`}>
               <button
                 type="button"
                 className={`trade-page__side-btn is-long${activeSides.has("Long") ? " is-active" : ""}`}
                 onClick={() => toggleSide("Long")}
               >
+                {hedgeMode && <span className="trade-page__side-check">{activeSides.has("Long") ? "☑" : "☐"}</span>}
                 Long
               </button>
               <button
@@ -155,6 +156,7 @@ export default function Trade() {
                 className={`trade-page__side-btn is-short${activeSides.has("Short") ? " is-active" : ""}`}
                 onClick={() => toggleSide("Short")}
               >
+                {hedgeMode && <span className="trade-page__side-check">{activeSides.has("Short") ? "☑" : "☐"}</span>}
                 Short
               </button>
             </div>
