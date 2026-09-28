@@ -159,7 +159,7 @@ const BASE = [
     fix: "Execution Quality Score",
     to: "/trade",
     built: true,
-    tip: "See estimated slippage for your size below the Qty field, plus which side costs less right now — computed live from the order book on screen.",
+    tip: "Tap ⋮ and turn on Improve Liquidity, then see estimated slippage for your size above the book, plus which side costs less right now — computed live from the order book on screen.",
   },
   {
     id: "slippage-guardrail",
@@ -167,7 +167,7 @@ const BASE = [
     fix: "Automatic Slippage Guardrail",
     to: "/trade",
     built: true,
-    tip: "Switch order type to Market, set size to 100%, then tap the side button — it warns instead of blocking, with a one-tap switch to Limit.",
+    tip: "Tap ⋮ and turn on Improve Liquidity, switch order type to Market, set size to 100%, then submit — it warns instead of blocking, with a one-tap switch to Limit that stays in the same sheet.",
   },
   {
     id: "scaled-orders",
@@ -175,7 +175,7 @@ const BASE = [
     fix: "Scaled Orders",
     to: "/trade",
     built: true,
-    tip: "Tap the order type pill and choose Scaled — set a price range, leg count, and size distribution instead of one single order.",
+    tip: "Tap ⋮ and turn on Improve Liquidity, then choose Scaled from the order type pill — set a price range, leg count, and size distribution instead of one single order.",
   },
 ];
 

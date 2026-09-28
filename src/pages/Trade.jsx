@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
 import RiskCheck from "../components/common/RiskCheck";
+import Toggle from "../components/common/Toggle";
 import { XIcon } from "../components/icons";
 import { shouldGate, markDone, leverageOr } from "../riskGate";
 import "./Trade.css";
@@ -32,7 +33,8 @@ const BIDS = [
 const ASK_LEVELS = [...ASKS].reverse();
 const BID_LEVELS = BIDS;
 
-const ORDER_TYPES = ["Market", "Limit", "Scaled"];
+const ALL_ORDER_TYPES = ["Market", "Limit", "Scaled"];
+const BASE_ORDER_TYPES = ["Market", "Limit"];
 const QTY_BY_PCT = { "25%": 8, "50%": 20, "75%": 35, "100%": 60 };
 const GUARDRAIL_THRESHOLD_PCT = 0.0005;
 
@@ -65,6 +67,9 @@ export default function Trade() {
   const [legCount, setLegCount] = useState(10);
   const [distribution, setDistribution] = useState("Flat");
   const [guardrail, setGuardrail] = useState(null);
+  const [liquidityMode, setLiquidityMode] = useState(false);
+
+  const orderTypes = liquidityMode ? ALL_ORDER_TYPES : BASE_ORDER_TYPES;
 
   const bestAsk = parseFloat(ASK_LEVELS[0].price);
   const bestBid = parseFloat(BID_LEVELS[0].price);
@@ -88,17 +93,28 @@ export default function Trade() {
           : "Long"
       : null;
   const savingsUsd = currentSlipUsd != null && otherSlipUsd != null ? Math.abs(currentSlipUsd - otherSlipUsd) : null;
+  const reqUsd = (illustrativeQty * currentBest) / leverage;
 
   const placeOrder = () => navigate("/positions", { state: { side, positionMode } });
 
   const submitOrder = () => {
-    if (orderType === "Market" && (!currentFill.complete || currentSlipPct > GUARDRAIL_THRESHOLD_PCT)) {
+    if (liquidityMode && orderType === "Market" && (!currentFill.complete || currentSlipPct > GUARDRAIL_THRESHOLD_PCT)) {
       setGuardrail({
         pct: currentSlipPct,
         complete: currentFill.complete,
+        step: "warning",
       });
       return;
     }
+    if (shouldGate()) {
+      setRiskCheck(true);
+    } else {
+      placeOrder();
+    }
+  };
+
+  const confirmLimitFromGuardrail = () => {
+    setGuardrail(null);
     if (shouldGate()) {
       setRiskCheck(true);
     } else {
@@ -147,7 +163,7 @@ export default function Trade() {
           </div>
         </div>
 
-        {orderType !== "Scaled" && (
+        {liquidityMode && orderType !== "Scaled" && (
           <div className="trade-page__eqs trade-page__eqs--full">
             <div className="trade-page__eqs-row">
               <span>Est. slippage ({illustrativeQty} BTC {side.toLowerCase()})</span>
@@ -314,7 +330,7 @@ export default function Trade() {
 
             <div className="trade-page__req-row">
               <span>Req. | Avbl.</span>
-              <span>0 | 6.58 USD</span>
+              <span>{liquidityMode ? `${reqUsd.toFixed(2)} | 125000.00` : "0 | 6.58"} USD</span>
             </div>
 
             <button type="button" className="trade-page__submit" onClick={submitOrder}>
@@ -393,6 +409,20 @@ export default function Trade() {
                     : "One-way: an opposite-side order nets against your existing position instead of opening a new one."}
                 </div>
               </div>
+
+              <div className="trade-page__modal-section">
+                <Toggle
+                  checked={liquidityMode}
+                  onChange={(v) => {
+                    setLiquidityMode(v);
+                    if (!v && orderType === "Scaled") setOrderType("Limit");
+                  }}
+                  label="Improve Liquidity"
+                />
+                <div className="trade-page__modal-note">
+                  Shows predicted slippage, warns on risky market orders, and enables scaled order entry.
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -407,7 +437,7 @@ export default function Trade() {
                 </button>
               </div>
               <div className="trade-page__order-type-list">
-                {ORDER_TYPES.map((t) => (
+                {orderTypes.map((t) => (
                   <button
                     key={t}
                     type="button"
@@ -433,7 +463,7 @@ export default function Trade() {
           </div>
         )}
 
-        {guardrail && (
+        {guardrail && guardrail.step === "warning" && (
           <div className="trade-page__overlay">
             <div className="trade-page__modal">
               <div className="trade-page__modal-header">
@@ -453,7 +483,7 @@ export default function Trade() {
                   className="trade-page__guardrail-btn is-limit"
                   onClick={() => {
                     setOrderType("Limit");
-                    setGuardrail(null);
+                    setGuardrail((g) => ({ ...g, step: "limit-price" }));
                   }}
                 >
                   Switch to Limit
@@ -470,6 +500,30 @@ export default function Trade() {
                   Place anyway
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {guardrail && guardrail.step === "limit-price" && (
+          <div className="trade-page__overlay">
+            <div className="trade-page__modal">
+              <div className="trade-page__modal-header">
+                <span>Set your limit price</span>
+                <button type="button" onClick={() => setGuardrail(null)}>
+                  <XIcon size={16} />
+                </button>
+              </div>
+              <div className="trade-page__modal-note">
+                Order type switched to Limit — it fills only at your chosen price or better, so this warning
+                won't come up again for this order.
+              </div>
+              <div className="trade-page__field">
+                <span className="trade-page__field-label">Limit Price USD</span>
+                <span className="trade-page__field-link">Best Bid</span>
+              </div>
+              <button type="button" className="trade-page__submit" onClick={confirmLimitFromGuardrail}>
+                Place {side} order
+              </button>
             </div>
           </div>
         )}
