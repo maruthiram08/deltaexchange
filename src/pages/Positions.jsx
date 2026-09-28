@@ -1,14 +1,20 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PhoneFrame from "../components/common/PhoneFrame";
 import BottomTabBar from "../components/common/BottomTabBar";
 import { XIcon, SearchIcon, ChartLineIcon } from "../components/icons";
+import { getOpenSides } from "../positionStore";
 import "./Positions.css";
+
+const SIDE_CARD = {
+  Long: { badgeClass: "", badge: "L", pctClass: "is-positive", pct: "+0.42", qty: "+1", entry: "86031.5", upl: "+₹36.10" },
+  Short: { badgeClass: "is-short", badge: "S", pctClass: "is-negative", pct: "-0.42", qty: "-1", entry: "86077.0", upl: "-₹36.10" },
+};
 
 export default function Positions() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const hedgeMode = location.state?.positionMode === "hedge";
+  const openSides = [...getOpenSides("BTCUSD")];
+  const isHedged = openSides.length > 1;
   const [expanded, setExpanded] = useState(false);
   const [showClose, setShowClose] = useState(false);
   const [closePct, setClosePct] = useState("100%");
@@ -23,7 +29,7 @@ export default function Positions() {
 
         <div className="positions-page__tabs">
           <span>Balances</span>
-          <span className="is-active">Positions ({hedgeMode ? 3 : 1})</span>
+          <span className="is-active">Positions ({1 + openSides.length})</span>
           <span>Orders</span>
           <span>Stop Orders</span>
           <button type="button" className="positions-page__history" onClick={() => navigate("/order-history")}>
@@ -49,59 +55,45 @@ export default function Positions() {
           <button type="button" className="positions-page__close-all">Close All</button>
         </div>
 
-        {hedgeMode && (
+        {openSides.length > 0 && (
           <div className="positions-page__hedge-group">
-            <div className="positions-page__hedge-label">Position Mode: Hedge · BTCUSD</div>
-            <div className="positions-page__card positions-page__card--compact">
-              <div className="positions-page__card-top">
-                <span className="positions-page__side-badge">L</span>
-                <span className="positions-page__symbol">BTCUSD</span>
-                <span className="positions-page__pct is-positive">+0.42 %</span>
-              </div>
-              <div className="positions-page__grid">
-                <div>
-                  <div className="positions-page__label">Quantity</div>
-                  <div className="positions-page__value is-positive">
-                    +1 <span>Lot</span>
+            <div className="positions-page__hedge-label">
+              {isHedged ? "Position Mode: Hedge · BTCUSD" : "BTCUSD"}
+            </div>
+            {openSides.map((s) => {
+              const c = SIDE_CARD[s];
+              return (
+                <div key={s} className="positions-page__card positions-page__card--compact">
+                  <div className="positions-page__card-top">
+                    <span className={`positions-page__side-badge ${c.badgeClass}`}>{c.badge}</span>
+                    <span className="positions-page__symbol">BTCUSD</span>
+                    <span className={`positions-page__pct ${c.pctClass}`}>{c.pct} %</span>
+                  </div>
+                  <div className="positions-page__grid">
+                    <div>
+                      <div className="positions-page__label">Quantity</div>
+                      <div className={`positions-page__value ${c.pctClass}`}>
+                        {c.qty} <span>Lot</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="positions-page__label">Entry Price</div>
+                      <div className="positions-page__value">{c.entry}</div>
+                    </div>
+                    <div>
+                      <div className="positions-page__label">UPL (M2M)</div>
+                      <div className={`positions-page__value ${c.pctClass}`}>{c.upl}</div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="positions-page__label">Entry Price</div>
-                  <div className="positions-page__value">86031.5</div>
-                </div>
-                <div>
-                  <div className="positions-page__label">UPL (M2M)</div>
-                  <div className="positions-page__value is-positive">+₹36.10</div>
-                </div>
+              );
+            })}
+            {isHedged && (
+              <div className="positions-page__hedge-note">
+                ⓘ Position Mode is set to Hedge — this order didn't net against your existing BTCUSD position, so
+                both now sit here independently.
               </div>
-            </div>
-            <div className="positions-page__card positions-page__card--compact">
-              <div className="positions-page__card-top">
-                <span className="positions-page__side-badge is-short">S</span>
-                <span className="positions-page__symbol">BTCUSD</span>
-                <span className="positions-page__pct is-negative">-0.42 %</span>
-              </div>
-              <div className="positions-page__grid">
-                <div>
-                  <div className="positions-page__label">Quantity</div>
-                  <div className="positions-page__value is-negative">
-                    -1 <span>Lot</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="positions-page__label">Entry Price</div>
-                  <div className="positions-page__value">86077.0</div>
-                </div>
-                <div>
-                  <div className="positions-page__label">UPL (M2M)</div>
-                  <div className="positions-page__value is-negative">-₹36.10</div>
-                </div>
-              </div>
-            </div>
-            <div className="positions-page__hedge-note">
-              ⓘ Position Mode is set to Hedge — this order didn't net against your existing BTCUSD position, so
-              both now sit here independently.
-            </div>
+            )}
           </div>
         )}
 

@@ -6,6 +6,7 @@ import RiskCheck from "../components/common/RiskCheck";
 import Toggle from "../components/common/Toggle";
 import { XIcon } from "../components/icons";
 import { shouldGate, markDone, leverageOr } from "../riskGate";
+import { recordOrder, getPositionMode, setPositionModeValue } from "../positionStore";
 import "./Trade.css";
 
 const ASKS = [
@@ -60,7 +61,11 @@ export default function Trade() {
   const [qtyPct, setQtyPct] = useState("25%");
   const [leverage, setLeverage] = useState(() => leverageOr(50));
   const [riskCheck, setRiskCheck] = useState(false);
-  const [positionMode, setPositionMode] = useState("one-way");
+  const [positionMode, setPositionModeState] = useState(() => getPositionMode());
+  const setPositionMode = (mode) => {
+    setPositionModeValue(mode);
+    setPositionModeState(mode);
+  };
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [orderType, setOrderType] = useState("Limit");
   const [orderTypeOpen, setOrderTypeOpen] = useState(false);
@@ -95,7 +100,14 @@ export default function Trade() {
   const savingsUsd = currentSlipUsd != null && otherSlipUsd != null ? Math.abs(currentSlipUsd - otherSlipUsd) : null;
   const reqUsd = (illustrativeQty * currentBest) / leverage;
 
-  const placeOrder = () => navigate("/positions", { state: { side, positionMode } });
+  const placeOrder = () => {
+    recordOrder("BTCUSD", side, positionMode);
+    navigate("/positions");
+  };
+
+  // Hedge Mode demos are about the position-mode mechanic, not leverage risk — the
+  // first-time-user risk check is an unrelated gate that just adds friction here.
+  const gated = () => positionMode !== "hedge" && shouldGate();
 
   const submitOrder = () => {
     if (liquidityMode && orderType === "Market" && (!currentFill.complete || currentSlipPct > GUARDRAIL_THRESHOLD_PCT)) {
@@ -106,7 +118,7 @@ export default function Trade() {
       });
       return;
     }
-    if (shouldGate()) {
+    if (gated()) {
       setRiskCheck(true);
     } else {
       placeOrder();
@@ -115,7 +127,7 @@ export default function Trade() {
 
   const confirmLimitFromGuardrail = () => {
     setGuardrail(null);
-    if (shouldGate()) {
+    if (gated()) {
       setRiskCheck(true);
     } else {
       placeOrder();
@@ -493,7 +505,7 @@ export default function Trade() {
                   className="trade-page__guardrail-btn is-anyway"
                   onClick={() => {
                     setGuardrail(null);
-                    if (shouldGate()) setRiskCheck(true);
+                    if (gated()) setRiskCheck(true);
                     else placeOrder();
                   }}
                 >
